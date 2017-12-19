@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.exadel.eom</groupId>
+	<artifactId>ui</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<name>UI</name>
+
+  <parent>
+    <groupId>com.exadel.eom</groupId>
+    <artifactId>eom</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<node.version>4.2.6</node.version>
+		<npm.version>3.5.2</npm.version>
+		<webpack.arguments></webpack.arguments>
+		<webpack.skip></webpack.skip>
+	</properties>
+
+	<dependencies>
+
+	</dependencies>
+<!--
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-starter-parent</artifactId>
+				<version>Brixton.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+-->
+	<build>
+		<plugins>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <configuration>
+          <nodeVersion>v${node.version}</nodeVersion>
+          <npmVersion>${npm.version}</npmVersion>
+          <installDirectory>${basedir}/node</installDirectory>
+          <workingDirectory>${basedir}</workingDirectory>
+        </configuration>
+        <executions>
+          <!-- Install nodejs & npm  -->
+          <execution>
+            <id>nodeInstall</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+          </execution>
+          <!-- Install dependencies from package.json. -->
+          <execution>
+            <id>npmInstall</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+          </execution>
+          <!-- Script assembling by webpack. -->
+          <execution>
+            <id>webpackBuild</id>
+            <goals>
+              <goal>webpack</goal>
+            </goals>
+            <configuration>
+              <skip>${webpack.skip}</skip>
+              <arguments>${webpack.arguments}</arguments>
+              <!--
+              <srcdir>${basedir}/src</srcdir>
+              <outputdir>${basedir}/public</outputdir>
+              -->
+              <triggerfiles>
+                <triggerfile>${basedir}/webpack.prod.config.js</triggerfile>
+                <triggerfile>${basedir}/package.json</triggerfile>
+              </triggerfiles>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+    </plugins>
+	</build>
+
+</project>

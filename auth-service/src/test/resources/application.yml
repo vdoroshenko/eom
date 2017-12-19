@@ -1,0 +1,15 @@
+spring:
+  data:
+    mongodb:
+      database: eom
+      port: 0
+
+ldap:
+  contextSource:
+    url: ldap://localhost:389
+    base: cn=Users,dc=test,dc=local
+    userDn: uid={0},ou=people
+    password: testPass
+  search:
+    userDnPatterns: uid={0},ou=people
+    groupSearchBase: ou=groups

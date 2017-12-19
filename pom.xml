@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.exadel.eom</groupId>
+	<artifactId>eom</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>E-office management</name>
+
+	<modules>
+		<module>common</module>
+		<!-- Infrastructure services -->
+		<module>config</module>
+		<module>monitoring</module>
+		<module>registry</module>
+		<module>gateway</module>
+		<module>auth-service</module>
+		<!-- Services -->
+		<module>officemap-service</module>
+		<module>notification-service</module>
+		<!-- User Interface-->
+		<module>ui</module>
+	</modules>
+
+</project>

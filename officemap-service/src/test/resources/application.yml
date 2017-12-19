@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      database: eom
+      port: 0

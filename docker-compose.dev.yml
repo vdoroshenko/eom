@@ -1,0 +1,54 @@
+version: '2.1'
+services:
+  rabbitmq:
+    ports:
+      - 5672:5672
+
+  config:
+    build: config
+    ports:
+      - 8888:8888
+
+  registry:
+    build: registry
+
+  gateway:
+    build: gateway
+    ports:
+      - 4000:4000
+
+  auth-service:
+    build: auth-service
+    ports:
+      - 5000:5000
+
+  auth-mongodb:
+    build: mongodb
+    ports:
+      - 25000:27017
+
+  officemap-service:
+    build: officemap-service
+    ports:
+      - 6000:6000
+
+  officemap-mongodb:
+    build: mongodb
+    ports:
+      - 26000:27017
+
+  notification-service:
+    build: notification-service
+    ports:
+      - 8000:8000
+
+  notification-mongodb:
+    build: mongodb
+    ports:
+      - 28000:27017
+
+  monitoring:
+    build: monitoring
+
+  ui:
+    build: ui
