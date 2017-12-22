@@ -1,19 +1,18 @@
 {
-  "name": "redux-minimal",
+  "name": "EOM",
   "version": "1.0.0",
-  "description": "Start building complex react-redux apps today, with this minimalist easy to understand starter kit (boilerplate)",
+  "description": "E-office management multientrypoint application",
   "keywords": [
     "react",
     "redux",
-    "minimal",
-    "starter kit",
-    "boilerplate"
+    "EOM",
+    "E-office management"
   ],
   "main": "index.js",
-  "homepage": "http://redux-minimal.js.org/",
+  "homepage": "TBD",
   "repository": {
     "type": "git",
-    "url": "https://github.com/catalin-luntraru/redux-minimal"
+    "url": "https://github.com/vdoroshenko/eom"
   },
   "scripts": {
     "start": "webpack-dev-server --inline --hot --history-api-fallback --host localhost --port 8080",
@@ -29,8 +28,8 @@
       "stage-3"
     ]
   },
-  "author": "Catalin Luntraru",
-  "license": "MIT",
+  "author": "Valeriy Doroshenko",
+  "license": "TBD",
   "dependencies": {
     "react": "^15.4.2",
     "react-bootstrap": "^0.30.7",

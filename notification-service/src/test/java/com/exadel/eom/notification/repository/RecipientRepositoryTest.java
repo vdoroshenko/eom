@@ -1,6 +1,5 @@
 package com.exadel.eom.notification.repository;
 
-import com.exadel.eom.notification.NotificationServiceApplication;
 import com.exadel.eom.notification.domain.Frequency;
 import com.exadel.eom.notification.domain.NotificationSettings;
 import com.exadel.eom.notification.domain.NotificationType;
@@ -10,16 +9,16 @@ import org.apache.commons.lang.time.DateUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = NotificationServiceApplication.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RecipientRepositoryTest {
 
 	@Autowired

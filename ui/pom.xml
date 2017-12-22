@@ -3,7 +3,6 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.exadel.eom</groupId>
 	<artifactId>ui</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 
@@ -19,26 +18,11 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<node.version>4.2.6</node.version>
 		<npm.version>3.5.2</npm.version>
-		<webpack.arguments></webpack.arguments>
-		<webpack.skip></webpack.skip>
+		<webpack.arguments>-p</webpack.arguments>
 	</properties>
 
-	<dependencies>
+	<dependencies />
 
-	</dependencies>
-<!--
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.springframework.cloud</groupId>
-				<artifactId>spring-cloud-starter-parent</artifactId>
-				<version>Brixton.RELEASE</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
--->
 	<build>
 		<plugins>
       <plugin>
@@ -53,7 +37,7 @@
         <executions>
           <!-- Install nodejs & npm  -->
           <execution>
-            <id>nodeInstall</id>
+            <id>node-install</id>
             <goals>
               <goal>install-node-and-npm</goal>
             </goals>
@@ -61,30 +45,54 @@
           </execution>
           <!-- Install dependencies from package.json. -->
           <execution>
-            <id>npmInstall</id>
+            <id>npm-install</id>
             <goals>
               <goal>npm</goal>
             </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
           </execution>
-          <!-- Script assembling by webpack. -->
+          <!-- Test by goal from package.json. -->
+          <!--
+          <execution>
+            <id>npm-test</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>test</arguments>
+            </configuration>
+          </execution>
+          -->
+          <!-- Build prod by goal from package.json. -->
+          <execution>
+            <id>npm-build-prod</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <arguments>run-script build-prod</arguments>
+            </configuration>
+          </execution>
+          <!-- Script assembling by webpack.
           <execution>
             <id>webpackBuild</id>
             <goals>
               <goal>webpack</goal>
             </goals>
             <configuration>
-              <skip>${webpack.skip}</skip>
               <arguments>${webpack.arguments}</arguments>
-              <!--
-              <srcdir>${basedir}/src</srcdir>
-              <outputdir>${basedir}/public</outputdir>
-              -->
               <triggerfiles>
                 <triggerfile>${basedir}/webpack.prod.config.js</triggerfile>
                 <triggerfile>${basedir}/package.json</triggerfile>
               </triggerfiles>
             </configuration>
           </execution>
+          -->
         </executions>
       </plugin>
 

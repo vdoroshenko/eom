@@ -13,10 +13,10 @@ server:
 
 ldap:
   contextSource:
-    url: ldap://localhost:389
-    base: cn=Users,dc=test,dc=local
-    userDn: uid={0},ou=people
-    password: testPass
+    url: ldaps://ldap.vn.exadel.com:636
+    base: ou=addressbook,dc=exadel,dc=com
+    userDn: cn=LDAPaccess,ou=Special,dc=exadel,dc=com
+    password: ${LDAP_PASSWORD}
   search:
-    userDnPatterns: uid={0},ou=people
-    groupSearchBase: ou=groups
+    userDnPatterns: (uid={0})
+    groupSearchBase: ou=addressbook
