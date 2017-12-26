@@ -4,12 +4,14 @@ import { history } from "./store.js";
 import App from "./components/App";
 import Home from "./components/Home";
 import NotFound from "./../common/components/NotFound";
+import UserLogin from "./../common/components/UserLogin"
 
 // build the router
 const router = (
   <Router onUpdate={() => window.scrollTo(0, 0)} history={history}>
     <Route path="/" component={App}>
       <IndexRoute component={Home}/>
+      <Route path="/login" component={UserLogin}/>
       <Route path="*" component={NotFound}/>
     </Route>
   </Router>
