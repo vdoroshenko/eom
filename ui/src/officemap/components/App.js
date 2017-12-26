@@ -9,15 +9,15 @@ import "../stylesheets/main.scss";
 export class App extends React.Component {
   // pre-render logic
   componentWillMount() {
-    // the first time we load the app, we need that users list
-    //this.props.dispatch({type: 'CHECK_USER_LOGIN'});
+    // the first time we load the app, we need that check
+    this.props.dispatch({type: 'CHECK_USER_LOGIN'});
   }
   // render
   render() {
     // show the loading state while we wait for the app to load
-    const {users, children} = this.props;
+    const {user, children} = this.props;
     /*
-    if (!users.length) {
+    if (!user) {
       return (
         <ProgressBar active now={100}/>
       );

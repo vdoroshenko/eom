@@ -5,7 +5,6 @@ import ApiUsers from "../api/users";
 export function* checkLogin(action) {
   // call check login
   yield call(ApiUsers.check);
-  //return action.callbackError("Some error");   // show an error when the API fails
 
   // update the state
   yield put({
@@ -40,7 +39,6 @@ export function* userLogout(action) {
 
   // update the state logout the user
   yield put({
-    type: 'USER_LOGOUT',
-    user_id: action.user_id,
+    type: 'USER_LOGOUT'
   });
 }
