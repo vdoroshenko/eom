@@ -1,5 +1,6 @@
 import { call, put } from "redux-saga/effects";
-import ApiUsers from "../api/users";
+import ApiUsers from "../../common/api/users";
+import * as types from "../../common/constants/UserActionTypes";
 
 // add/edit a user
 export function* checkLogin(action) {
@@ -8,12 +9,10 @@ export function* checkLogin(action) {
 
   // update the state
   yield put({
-    type: 'CHECK_USER_LOGIN',
+    type: types.USER_CHECK_LOGIN_DONE,
     user: action.user,
   });
 
-  // success
-  action.callbackSuccess();
 }
 
 // add/edit a user
@@ -24,7 +23,7 @@ export function* userLogin(action) {
 
   // update the state by logging the user
   yield put({
-    type: 'USER_LOGIN',
+    type: types.USER_LOGIN_DONE,
     user: action.user,
   });
 
@@ -39,6 +38,9 @@ export function* userLogout(action) {
 
   // update the state logout the user
   yield put({
-    type: 'USER_LOGOUT'
+    type: types.USER_LOGOUT_DONE
   });
+
+  // success
+  action.callbackSuccess();
 }

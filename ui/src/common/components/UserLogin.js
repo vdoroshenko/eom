@@ -1,4 +1,4 @@
-import React from "react";
+import React,{ Component } from "react";
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
 import { Field, SubmissionError, reduxForm } from "redux-form";
@@ -7,7 +7,7 @@ import FormField from "./FormField";
 import FormSubmit from "./FormSubmit";
 
 // User add/edit page component
-export class UserLogin extends React.Component {
+export class UserLogin extends Component {
   // constructor
   constructor(props) {
     super(props);

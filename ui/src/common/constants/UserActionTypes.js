@@ -1,0 +1,6 @@
+export const USER_CHECK_LOGIN = 'USER_CHECK_LOGIN';
+export const USER_CHECK_LOGIN_DONE = 'USER_CHECK_LOGIN_DONE';
+export const USER_LOGIN = 'USER_LOGIN';
+export const USER_LOGIN_DONE = 'USER_LOGIN_DONE';
+export const USER_LOGOUT = 'USER_LOGOUT';
+export const USER_LOGOUT_DONE = 'USER_LOGOUT_DONE';

@@ -55,7 +55,6 @@
             </configuration>
           </execution>
           <!-- Test by goal from package.json. -->
-          <!--
           <execution>
             <id>npm-test</id>
             <goals>
@@ -66,7 +65,6 @@
               <arguments>test</arguments>
             </configuration>
           </execution>
-          -->
           <!-- Build prod by goal from package.json. -->
           <execution>
             <id>npm-build-prod</id>
@@ -75,7 +73,7 @@
             </goals>
             <phase>generate-resources</phase>
             <configuration>
-              <arguments>run-script build-prod</arguments>
+              <arguments>run build-prod</arguments>
             </configuration>
           </execution>
           <!-- Script assembling by webpack.

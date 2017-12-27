@@ -1,8 +1,8 @@
-import React, { PropTypes } from "react";
+import React, { Component, PropTypes } from "react";
 import { FormGroup, FormControl, HelpBlock, Row, Col } from "react-bootstrap";
 
 // Form field component
-export default class FormField extends React.Component {
+export default class FormField extends Component {
   // render
   render() {
     const {className, doValidate, meta} = this.props;
