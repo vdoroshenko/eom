@@ -31,25 +31,25 @@ public class UserController {
     }
 
 	@PreAuthorize("#oauth2.hasScope('server')")
-	@RequestMapping(method = RequestMethod.POST)
+	@RequestMapping(value = "/adm", method = RequestMethod.POST)
 	public void createUser(@Valid @RequestBody User user) {
 		userService.create(user);
 	}
 
 	@PreAuthorize("#oauth2.hasScope('server')")
-	@RequestMapping(method = RequestMethod.PUT)
+	@RequestMapping(value = "/adm",method = RequestMethod.PUT)
 	public void updateUser(@Valid @RequestBody User user) {
 		userService.update(user);
 	}
 
     @PreAuthorize("#oauth2.hasScope('server')")
-    @RequestMapping(value = "/{name}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/adm/{name}", method = RequestMethod.DELETE)
     public void deleteUser(@PathVariable("name") String name) {
         userService.delete(name);
     }
 
     @PreAuthorize("#oauth2.hasScope('server')")
-    @RequestMapping(value = "/find/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(value = "/adm/find/{name}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public User findUser(@PathVariable("name") String name) {
         return userService.find(name);
     }
