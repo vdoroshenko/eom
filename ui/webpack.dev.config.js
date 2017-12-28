@@ -2,6 +2,7 @@ var webpack = require("webpack");
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = require('./webpack.config.js');    // inherit from the main config file
 
+//module.exports.devtool = 'eval-source-map';
 // disable the hot reload
 module.exports.entry = [
   'babel-polyfill',

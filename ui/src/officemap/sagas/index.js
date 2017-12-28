@@ -1,6 +1,6 @@
 import { takeLatest } from "redux-saga";
 import { fork } from "redux-saga/effects";
-import * as types from "../../common/constants/UserActionTypes";
+import * as types from "../../common/constants/actions/UserActionTypes";
 import { checkLogin, userLogin, userLogout } from "./users";
 
 // main saga generators

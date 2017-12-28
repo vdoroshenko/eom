@@ -1,3 +1,7 @@
+import axios from "axios";
+import * as uri from "../constants/uris/UserURI";
+
+const baseURI = "http://localhost:4000/";
 // API Users static class
 export default class ApiUsers {
   // add/edit a user
@@ -6,7 +10,7 @@ export default class ApiUsers {
       setTimeout(() => {
         // do something here
         resolve();
-      }, 1000);
+      }, 500);
     });
   }
 
@@ -21,11 +25,6 @@ export default class ApiUsers {
   }
   // check is user logged or not
   static check() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        // do something here
-        resolve();
-      }, 500);
-    });
+    return axios.get(baseURI+uri.USER_CHECK_URI);
   }
 }

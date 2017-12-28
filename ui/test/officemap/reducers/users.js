@@ -1,6 +1,6 @@
 import assert from "assert";
 import users from "../../../src/officemap/reducers/users";
-import * as types from "../../../src/common/constants/UserActionTypes";
+import * as types from "../../../src/common/constants/actions/UserActionTypes";
 
 // unit tests for the users reducers
 // mocha - http://mochajs.org/#getting-started

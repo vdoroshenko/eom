@@ -1,4 +1,4 @@
-import * as types from "../../common/constants/UserActionTypes";
+import * as types from "../../common/constants/actions/UserActionTypes";
 // users reducer
 export default function users(state = {}, action) {
   switch (action.type) {
