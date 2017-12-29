@@ -17,5 +17,5 @@ export const reducers = combineReducers({
       }
     }
   }),
-  users: users,
+  security: users,
 });

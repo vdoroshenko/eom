@@ -25,6 +25,7 @@ export default class ApiUsers {
   }
   // check is user logged or not
   static check() {
-    return axios.get(baseURI+uri.USER_CHECK_URI);
+    let url = baseURI+uri.USER_CHECK_URI;
+    return axios.get(url);
   }
 }

@@ -5,7 +5,12 @@ import * as types from "../../common/constants/actions/UserActionTypes";
 // add/edit a user
 export function* checkLogin(action) {
   // call check login
-  let user = yield call(ApiUsers.check);
+  let user = {};
+  try {
+    user = yield call(ApiUsers.check);
+  } catch(e) {
+    
+  }
 
   // update the state
   yield put({

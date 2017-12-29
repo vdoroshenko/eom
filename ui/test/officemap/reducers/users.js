@@ -54,9 +54,9 @@ describe('Users reducer', () => {
             }
           },
           {
-            type: types.USER_LOGOUT_DONE,
+            type: types.USER_LOGOUT_DONE
           }),
-        {}
+        {user: {}}
       );
     });
   });

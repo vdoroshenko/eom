@@ -5,6 +5,7 @@ import { Field, SubmissionError, reduxForm } from "redux-form";
 import { PageHeader, Form } from "react-bootstrap";
 import FormField from "./FormField";
 import FormSubmit from "./FormSubmit";
+import * as types from "../constants/actions/UserActionTypes";
 
 // User add/edit page component
 export class UserLogin extends Component {
@@ -37,7 +38,7 @@ export class UserLogin extends Component {
     const {dispatch} = this.props;
     return new Promise((resolve, reject) => {
       dispatch({
-        type: 'USER_LOGIN',
+        type: types.USER_LOGIN,
         user: {
           username: values.username,
           password: values.password,

@@ -18,16 +18,16 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @SpringBootApplication
 @EnableDiscoveryClient
@@ -55,10 +55,16 @@ public class AuthApplication {
 		protected void configure(HttpSecurity http) throws Exception {
 			// @formatter:off
 			http
-					.authorizeRequests()
-					.anyRequest().fullyAuthenticated()
+                    //configure CORS -- uses a Bean by the name of     corsConfigurationSource (see method below)
+                    //CORS must be configured prior to Spring Security
+                    .cors()
+                    .and()
+                    //configuring security
+					.authorizeRequests().anyRequest().fullyAuthenticated()
 					.and()
-					.formLogin().successHandler(customAuthenticationSuccessHandler);
+					.formLogin().successHandler(customAuthenticationSuccessHandler)
+                    .and()
+                    .logout().deleteCookies("JSESSIONID").invalidateHttpSession(true).logoutUrl("/logout").logoutSuccessUrl("/");
 			/*
 			http
 						.httpBasic()
@@ -101,6 +107,27 @@ public class AuthApplication {
 		public AuthenticationManager authenticationManagerBean() throws Exception {
 			return super.authenticationManagerBean();
 		}
+
+        //The CORS filter bean - Configures allowed CORS any (source) to any
+        //(api route and method) endpoint
+        @Bean
+        CorsConfigurationSource corsConfigurationSource() {
+            final CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(true);
+            config.addAllowedOrigin("*");
+            config.addAllowedHeader("*");
+            config.addAllowedMethod("OPTIONS");
+            config.addAllowedMethod("HEAD");
+            config.addAllowedMethod("GET");
+            config.addAllowedMethod("PUT");
+            config.addAllowedMethod("POST");
+            config.addAllowedMethod("DELETE");
+            config.addAllowedMethod("PATCH");
+
+            final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+            source.registerCorsConfiguration("/**", config);
+            return source;
+        }
 	}
 
 	@Configuration

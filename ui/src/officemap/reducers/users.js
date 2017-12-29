@@ -11,6 +11,7 @@ export default function users(state = {}, action) {
     case types.USER_LOGOUT_DONE: {
       let {user, ...newState} = state;
       user = null;
+      newState.user = {};
       return newState;
     }
 
