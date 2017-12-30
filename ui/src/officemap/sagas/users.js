@@ -9,7 +9,7 @@ export function* checkLogin(action) {
   try {
     user = yield call(ApiUsers.check);
   } catch(e) {
-    
+    //return action.callbackError("Some error");   // show an error when the API fails
   }
 
   // update the state
@@ -23,8 +23,12 @@ export function* checkLogin(action) {
 // add/edit a user
 export function* userLogin(action) {
   // call the api to login the user
-  let user = yield call(ApiUsers.login);
-  //return action.callbackError("Some error");   // show an error when the API fails
+  let user = {};
+  try {
+    user = yield call(ApiUsers.login, action.user.username, action.user.password);
+  } catch (e) {
+    return action.callbackError(e);   // show an error when the API fails
+  }
 
   // update the state by logging the user
   yield put({

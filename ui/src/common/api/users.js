@@ -5,13 +5,12 @@ const baseURI = "http://localhost:4000/";
 // API Users static class
 export default class ApiUsers {
   // add/edit a user
-  static login() {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        // do something here
-        resolve();
-      }, 500);
-    });
+  static login(username='', password='') {
+    let url = baseURI+uri.USER_LOGIN_URI;
+    let params = new URLSearchParams();
+    params.append('username', username);
+    params.append('password', password);
+    return axios.post(url, params);
   }
 
   // delete a user
