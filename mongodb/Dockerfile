@@ -12,3 +12,5 @@ RUN \
  rm -rf /var/cache/* && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["/init.sh"]
+
+EXPOSE 27017

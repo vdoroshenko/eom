@@ -10,12 +10,12 @@ security:
 spring:
   data:
     mongodb:
-      host: account-mongodb
+      host: officemap-mongodb
       username: user
       password: ${MONGODB_PASSWORD}
-      database: piggymetrics
+      database: eom
       port: 27017
 
 server:
-  context-path: /accounts
+  context-path: /officemap
   port: 6000

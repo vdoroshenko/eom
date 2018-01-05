@@ -5,11 +5,15 @@ spring:
       username: user
       password: ${MONGODB_PASSWORD}
       database: eom
+      #uri: mongodb://user:${MONGODB_PASSWORD}@localhost:25000
       port: 27017
 
 server:
   context-path: /uaa
   port: 5000
+
+security:
+  sessions: never
 
 ldap:
   contextSource:

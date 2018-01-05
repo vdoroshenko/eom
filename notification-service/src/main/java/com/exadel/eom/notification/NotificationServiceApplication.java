@@ -66,7 +66,7 @@ public class NotificationServiceApplication {
 	}
 
 	@Configuration
-	static class CustomConversionsConfig {
+	static class CustomConfig {
 
 		@Bean
 		public CustomConversions customConversions() {

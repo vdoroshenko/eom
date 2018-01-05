@@ -13,7 +13,7 @@ services:
   config:
     environment:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
-    image: eom/eom-config
+    image: eom/config
     restart: always
     logging:
       options:
@@ -23,7 +23,7 @@ services:
   registry:
     environment:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
-    image: eom/eom-registry
+    image: eom/registry
     restart: always
     depends_on:
       config:
@@ -38,7 +38,7 @@ services:
   gateway:
     environment:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
-    image: eom/eom-gateway
+    image: eom/gateway
     restart: always
     depends_on:
       config:
@@ -57,7 +57,7 @@ services:
       OFFICEMAP_SERVICE_PASSWORD: $OFFICEMAP_SERVICE_PASSWORD
       MONGODB_PASSWORD: $MONGODB_PASSWORD
       LDAP_PASSWORD: $LDAP_PASSWORD
-    image: eom/eom-auth-service
+    image: eom/auth-service
     restart: always
     depends_on:
       config:
@@ -70,7 +70,7 @@ services:
   auth-mongodb:
     environment:
       MONGODB_PASSWORD: $MONGODB_PASSWORD
-    image: eom/eom-mongodb
+    image: eom/mongodb
     restart: always
     logging:
       options:
@@ -82,7 +82,7 @@ services:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
       OFFICEMAP_SERVICE_PASSWORD: $OFFICEMAP_SERVICE_PASSWORD
       MONGODB_PASSWORD: $MONGODB_PASSWORD
-    image: eom/eom-officemap-service
+    image: eom/officemap-service
     restart: always
     depends_on:
       config:
@@ -96,7 +96,7 @@ services:
     environment:
       INIT_DUMP: officemap-service-dump.js
       MONGODB_PASSWORD: $MONGODB_PASSWORD
-    image: eom/eom-mongodb
+    image: eom/mongodb
     restart: always
     logging:
       options:
@@ -108,7 +108,7 @@ services:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
       MONGODB_PASSWORD: $MONGODB_PASSWORD
       NOTIFICATION_SERVICE_PASSWORD: $NOTIFICATION_SERVICE_PASSWORD
-    image: eom/eom-notification-service
+    image: eom/notification-service
     restart: always
     depends_on:
       config:
@@ -119,10 +119,10 @@ services:
         max-file: "10"
 
   notification-mongodb:
-    image: eom/eom-mongodb
-    restart: always
     environment:
       MONGODB_PASSWORD: $MONGODB_PASSWORD
+    image: eom/mongodb
+    restart: always
     logging:
       options:
         max-size: "10m"
@@ -131,7 +131,7 @@ services:
   monitoring:
     environment:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
-    image: eom/eom-monitoring
+    image: eom/monitoring
     restart: always
     depends_on:
       config:
@@ -145,7 +145,7 @@ services:
         max-file: "10"
 
   ui:
-    image: eom/eom-ui
+    image: eom/ui
     restart: always
     ports:
       - 80:80
