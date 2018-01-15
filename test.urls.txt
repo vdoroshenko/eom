@@ -1,0 +1,2 @@
+http --form POST browser:@localhost:4000/uaa/oauth/token grant_type=password username=user password=password
+

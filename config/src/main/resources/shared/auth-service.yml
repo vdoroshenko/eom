@@ -8,12 +8,23 @@ spring:
       #uri: mongodb://user:${MONGODB_PASSWORD}@localhost:25000
       port: 27017
 
+security:
+  basic:
+    enabled: false
+  user:
+    password: password
+  oauth2:
+    client:
+      clientId: acme
+      clientSecret: acmesecret
+      #accessTokenUri: http://auth-service:5000/uaa/oauth/token
+      authorized-grant-types: authorization_code,refresh_token,password
+      scope: openid
+
 server:
   context-path: /uaa
   port: 5000
-
-security:
-  sessions: never
+  use-forward-headers: false
 
 ldap:
   contextSource:
@@ -22,5 +33,5 @@ ldap:
     userDn: cn=LDAPaccess,ou=Special,dc=exadel,dc=com
     password: ${LDAP_PASSWORD}
   search:
-    userDnPatterns: (uid={0})
+    userDnPatterns: (uid={0},ou=addressbook,dc=exadel,dc=com)
     groupSearchBase: ou=addressbook
