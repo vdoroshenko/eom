@@ -1,7 +1,7 @@
 package com.exadel.eom.notification.service;
 
-import com.exadel.eom.notification.domain.Recipient;
 import com.exadel.eom.notification.domain.NotificationType;
+import com.exadel.eom.notification.domain.Recipient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

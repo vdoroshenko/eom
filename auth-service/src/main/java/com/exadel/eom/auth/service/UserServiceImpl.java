@@ -5,7 +5,7 @@ import com.exadel.eom.auth.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.encoding.LdapShaPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -14,7 +14,7 @@ public class UserServiceImpl implements UserService {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	private static final LdapShaPasswordEncoder encoder = new LdapShaPasswordEncoder();
+	private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 	@Autowired
 	private UserRepository repository;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
 		User existing = repository.findOne(user.getUsername());
 		Assert.isNull(existing, "user already exists: " + user.getUsername());
 
-		String hash = encoder.encodePassword(user.getPassword(),null);
+		String hash = encoder.encode(user.getPassword());
 		user.setPassword(hash);
 
 		repository.save(user);
@@ -37,7 +37,7 @@ public class UserServiceImpl implements UserService {
     public void update(User user) {
         User existing = repository.findOne(user.getUsername());
         Assert.notNull(existing, "user doesn't exist: " + user.getUsername());
-        String hash = encoder.encodePassword(user.getPassword(),null);
+        String hash = encoder.encode(user.getPassword());
         if(!existing.getPassword().equals(user.getPassword()) && !existing.getPassword().equals(hash)) {
             user.setPassword(hash);
             log.info("password hash was updated for: {}", user.getUsername());
@@ -56,9 +56,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void createIfNotExistsUpdatePassword(User user) {
+	public void upsert(User user) {
 		User existing = repository.findOne(user.getUsername());
-		String hash = encoder.encodePassword(user.getPassword(),null);
+		String hash = encoder.encode(user.getPassword());
 		if (existing == null) {
 
 			user.setPassword(hash);

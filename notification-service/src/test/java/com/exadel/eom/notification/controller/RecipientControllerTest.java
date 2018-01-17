@@ -1,12 +1,12 @@
 package com.exadel.eom.notification.controller;
 
+import com.exadel.eom.notification.domain.Frequency;
+import com.exadel.eom.notification.domain.NotificationSettings;
+import com.exadel.eom.notification.domain.NotificationType;
 import com.exadel.eom.notification.domain.Recipient;
 import com.exadel.eom.notification.service.RecipientService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
-import com.exadel.eom.notification.domain.Frequency;
-import com.exadel.eom.notification.domain.NotificationSettings;
-import com.exadel.eom.notification.domain.NotificationType;
 import com.sun.security.auth.UserPrincipal;
 import org.junit.Before;
 import org.junit.Test;

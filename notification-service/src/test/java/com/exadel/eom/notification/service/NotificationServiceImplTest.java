@@ -1,9 +1,9 @@
 package com.exadel.eom.notification.service;
 
-import com.exadel.eom.notification.domain.Recipient;
 import com.exadel.eom.notification.client.AuthServiceClient;
-import com.google.common.collect.ImmutableList;
 import com.exadel.eom.notification.domain.NotificationType;
+import com.exadel.eom.notification.domain.Recipient;
+import com.google.common.collect.ImmutableList;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

@@ -7,9 +7,11 @@ spring:
 ldap:
   contextSource:
     url: ldaps://ldap.vn.exadel.com:636
-    base: ou=addressbook,dc=exadel,dc=com
     userDn: cn=LDAPaccess,ou=Special,dc=exadel,dc=com
     password: ${LDAP_PASSWORD}
   search:
-    userDnPatterns: (uid={0})
-    groupSearchBase: ou=addressbook
+    userSearchBase: ou=addressbook,dc=exadel,dc=com
+    userSearchFilter: (uid={0})
+    groupSearchBase: ou=Groups,dc=exadel,dc=com
+    groupSearchFilter: (member={1})
+    groupRoleAttribute: cn

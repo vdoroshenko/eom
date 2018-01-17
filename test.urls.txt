@@ -1,2 +1,3 @@
-http --form POST browser:@localhost:4000/uaa/oauth/token grant_type=password username=user password=password
+Authentification check:
+http --form POST api-client:clientpassword@localhost:4000/uaa/oauth/token grant_type=password username=valdor password=backd00r
 

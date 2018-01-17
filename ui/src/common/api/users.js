@@ -8,6 +8,9 @@ export default class ApiUsers {
   static login(username='', password='') {
     let url = baseURI+uri.USER_LOGIN_URI;
     let params = new URLSearchParams();
+    params.append('grant_type', "password");
+    params.append('client_id', "browser");
+    //params.append('client_secret', "");
     params.append('username', username);
     params.append('password', password);
     return axios.post(url, params);

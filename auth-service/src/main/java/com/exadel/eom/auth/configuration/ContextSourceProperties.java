@@ -1,4 +1,4 @@
-package com.exadel.eom.auth.service.security;
+package com.exadel.eom.auth.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -10,19 +10,12 @@ public class ContextSourceProperties {
 
         private String url;
 
-        private String base;
-
         private String userDn;
 
         private String password;
 
-
         public String getUrl() {
             return url;
-        }
-
-        public String getBase() {
-            return base;
         }
 
         public String getUserDn() {
@@ -37,10 +30,6 @@ public class ContextSourceProperties {
             this.url = url;
         }
 
-        public void setBase(String base) {
-            this.base = base;
-        }
-
         public void setUserDn(String userDn) {
             this.userDn = userDn;
         }
@@ -51,24 +40,54 @@ public class ContextSourceProperties {
     }
 
     public static class Search {
-        private String userDnPatterns;
+        private String userSearchBase;
+
+        private String userSearchFilter;
 
         private String groupSearchBase;
 
-        public String getUserDnPatterns() {
-            return userDnPatterns;
+        private String groupSearchFilter;
+
+        private String groupRoleAttribute;
+
+        public String getUserSearchBase() {
+            return userSearchBase;
+        }
+
+        public void setUserSearchBase(String userSearchBase) {
+            this.userSearchBase = userSearchBase;
+        }
+
+        public String getUserSearchFilter() {
+            return userSearchFilter;
+        }
+
+        public void setUserSearchFilter(String userSearchFilter) {
+            this.userSearchFilter = userSearchFilter;
         }
 
         public String getGroupSearchBase() {
             return groupSearchBase;
         }
 
-        public void setUserDnPatterns(String userDnPatterns) {
-            this.userDnPatterns = userDnPatterns;
-        }
-
         public void setGroupSearchBase(String groupSearchBase) {
             this.groupSearchBase = groupSearchBase;
+        }
+
+        public String getGroupSearchFilter() {
+            return groupSearchFilter;
+        }
+
+        public void setGroupSearchFilter(String groupSearchFilter) {
+            this.groupSearchFilter = groupSearchFilter;
+        }
+
+        public String getGroupRoleAttribute() {
+            return groupRoleAttribute;
+        }
+
+        public void setGroupRoleAttribute(String groupRoleAttribute) {
+            this.groupRoleAttribute = groupRoleAttribute;
         }
     }
 

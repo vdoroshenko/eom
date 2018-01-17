@@ -1,9 +1,9 @@
 package com.exadel.eom.notification.service;
 
-import com.exadel.eom.notification.domain.Recipient;
 import com.exadel.eom.notification.domain.Frequency;
 import com.exadel.eom.notification.domain.NotificationSettings;
 import com.exadel.eom.notification.domain.NotificationType;
+import com.exadel.eom.notification.domain.Recipient;
 import com.exadel.eom.notification.repository.RecipientRepository;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

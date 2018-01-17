@@ -1,6 +1,6 @@
 import React from "react";
-import { Router, Route, IndexRoute } from "react-router";
-import { history } from "./store.js";
+import {IndexRoute, Route, Router} from "react-router";
+import {history} from "./store.js";
 import App from "./components/App";
 import Home from "./components/Home";
 import NotFound from "../common/components/NotFound";

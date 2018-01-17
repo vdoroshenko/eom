@@ -1,7 +1,6 @@
 package com.exadel.eom.auth.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -24,15 +23,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.security.KeyPair;
+import java.util.Optional;
 
 @Configuration
 @EnableAuthorizationServer
-public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
-
-    private TokenStore tokenStore = new InMemoryTokenStore();
+public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
     @Autowired
-    @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
 
     @Autowired
@@ -41,23 +38,22 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
+        String password = Optional.ofNullable(env.getProperty("KEYSTORE_PASSWORD")).orElse("foobar");
+        String jwtKey = Optional.ofNullable(env.getProperty("KEYSTORE_JWT_KEY")).orElse("test");
         KeyPair keyPair = new KeyStoreKeyFactory(
-                new ClassPathResource("keystore.jks"), "foobar".toCharArray())
-                .getKeyPair("test");
+                new ClassPathResource("keystore.jks"), password.toCharArray())
+                .getKeyPair(jwtKey);
         converter.setKeyPair(keyPair);
         return converter;
     }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        // TODO: here needs serialization clients in some database
         // @formatter:off
         clients.inMemory()
-                    .withClient("acme")
-                    .secret("acmesecret")
-                    .authorizedGrantTypes("authorization_code", "refresh_token", "password")
-                    .scopes("openid")
-                .and()
-                    .withClient("browser")
+                    .withClient("api-client")
+                    .secret(env.getProperty("API_CLIENT_PASSWORD"))
                     .authorizedGrantTypes("refresh_token", "password")
                     .scopes("ui")
                 .and()
@@ -77,9 +73,11 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
     public void configure(AuthorizationServerEndpointsConfigurer endpoints)
             throws Exception {
         // @formatter:off
-        endpoints.tokenStore(tokenStore)
+        endpoints.tokenStore(tokenStore())
                 .authenticationManager(authenticationManager)
-                .accessTokenConverter(jwtAccessTokenConverter());
+                .accessTokenConverter(jwtAccessTokenConverter())
+                ;
+
         // @formatter:on
         endpoints.addInterceptor(new HandlerInterceptorAdapter() {
             @Override
@@ -108,6 +106,11 @@ public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
         oauthServer.tokenKeyAccess("permitAll()")
                 .checkTokenAccess("isAuthenticated()");
         // @formatter:on
+    }
+
+    @Bean
+    public TokenStore tokenStore() {
+        return new InMemoryTokenStore();
     }
 
 }

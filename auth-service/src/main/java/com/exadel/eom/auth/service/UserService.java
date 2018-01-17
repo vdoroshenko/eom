@@ -12,5 +12,5 @@ public interface UserService {
 
 	void delete(String username);
 
-	void createIfNotExistsUpdatePassword(User user);
+	void upsert(User user);
 }

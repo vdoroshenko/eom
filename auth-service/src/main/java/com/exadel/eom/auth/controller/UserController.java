@@ -30,15 +30,16 @@ public class UserController {
                 : new ResponseEntity(HttpStatus.OK);
     }
 
+	@PreAuthorize("#oauth2.hasScope('server')")
 	@RequestMapping(method = RequestMethod.POST)
 	public void createUser(@Valid @RequestBody User user) {
-		userService.create(user);
+		userService.upsert(user);
 	}
 
 	@PreAuthorize("#oauth2.hasScope('server')")
 	@RequestMapping(method = RequestMethod.PUT)
 	public void updateUser(@Valid @RequestBody User user) {
-		userService.update(user);
+		userService.create(user);
 	}
 
     @PreAuthorize("#oauth2.hasScope('server')")
