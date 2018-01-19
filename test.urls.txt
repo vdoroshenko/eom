@@ -1,3 +1,4 @@
 Authentification check:
+Header auth param for "api-client:clientpassword" - Authorization:Basic YXBpLWNsaWVudDpjbGllbnRwYXNzd29yZA==
 http --form POST api-client:clientpassword@localhost:4000/uaa/oauth/token grant_type=password username=valdor password=backd00r
 

@@ -9,14 +9,16 @@ export default class ApiUsers {
     let url = baseURI+uri.USER_LOGIN_URI;
     let params = new URLSearchParams();
     params.append('grant_type', "password");
-    params.append('client_id', "browser");
-    //params.append('client_secret', "");
     params.append('username', username);
     params.append('password', password);
-    return axios.post(url, params);
+    return axios.post(url, params, {headers:{'Authorization':'Basic '+uri.AUTH_TOKEN}});
   }
 
-  // delete a user
+  static _setDefaultAuth(token) {
+    axios.defaults.headers.common['Authorization'] = token;
+  }
+
+  // revoke token
   static logout() {
     return new Promise(resolve => {
       setTimeout(() => {

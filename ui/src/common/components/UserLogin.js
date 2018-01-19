@@ -24,8 +24,8 @@ export class UserLogin extends Component {
       <div className="page-user-login">
         <PageHeader>User login</PageHeader>
         <Form horizontal onSubmit={handleSubmit(this.formSubmit)}>
-          <Field component={FormField} name="username" label="Username" doValidate={true}/>
-          <Field component={FormField} name="password" label="Password"/>
+          <Field component={FormField} name="username" label="User" doValidate={true} placeholder="Username"/>
+          <Field component={FormField} name="password" label="Password" type="password" placeholder="Passcode"/>
           <FormSubmit error={error} invalid={invalid} submitting={submitting} buttonSaveLoading="Submitting..."
             buttonSave="Login"/>
         </Form>
@@ -69,11 +69,10 @@ const UserLoginForm = reduxForm({
 
 // export the connected class
 function mapStateToProps(state, own_props) {
-  //const user = state.users.find(x => Number(x.id) === Number(own_props.params.id)) || {};
-  const user = state.user;
+  const user = state.security.user;
   return {
-    user: user,
-    initialValues: user,
+    user: {},
+    initialValues: user
   };
 }
 export default connect(mapStateToProps)(UserLoginForm);

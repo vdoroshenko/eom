@@ -6,39 +6,22 @@ import * as types from "../../../src/common/constants/actions/UserActionTypes";
 // mocha - http://mochajs.org/#getting-started
 // assert - https://nodejs.org/api/assert.html#assert_assert_deepequal_actual_expected_message
 describe('Users reducer', () => {
-  describe(types.USER_LOGIN_DONE, () => {
+  describe(types.USER_LOGIN_SUCCESS, () => {
     it('should return a logged user', () => {
       assert.deepEqual(
         users({}, {
-          type: types.USER_LOGIN_DONE,
+          type: types.USER_LOGIN_SUCCESS,
           user: {
             username: 'LoginName',
             password: 'secret',
           },
+          data: {access_token:"123",token_type: 'bearer'}
         }), {
-          user: {
-            username: 'LoginName',
-            password: 'secret',
-          }
-        }
-      );
-    });
-  });
-
-  describe(types.USER_CHECK_LOGIN_DONE, () => {
-    it('should return a already logged user', () => {
-      assert.deepEqual(
-        users({}, {
-          type: types.USER_CHECK_LOGIN_DONE,
           user: {
             username: 'LoginName',
             password: 'secret',
           },
-        }), {
-          user: {
-            username: 'LoginName',
-            password: 'secret',
-          }
+          auth: {access_token:"123",token_type: 'bearer'}
         }
       );
     });
@@ -51,12 +34,13 @@ describe('Users reducer', () => {
             user: {
               username: 'LoginName',
               password: 'secret',
-            }
+            },
+            auth: {access_token:"123",token_type: 'bearer'}
           },
           {
             type: types.USER_LOGOUT_DONE
           }),
-        {user: {}}
+        {}
       );
     });
   });

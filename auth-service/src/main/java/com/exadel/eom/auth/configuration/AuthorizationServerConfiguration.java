@@ -75,28 +75,9 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         // @formatter:off
         endpoints.tokenStore(tokenStore())
                 .authenticationManager(authenticationManager)
-                .accessTokenConverter(jwtAccessTokenConverter())
-                ;
+                .accessTokenConverter(jwtAccessTokenConverter());
 
         // @formatter:on
-        endpoints.addInterceptor(new HandlerInterceptorAdapter() {
-            @Override
-            public void postHandle(HttpServletRequest request,
-                                   HttpServletResponse response, Object handler,
-                                   ModelAndView modelAndView) throws Exception {
-                if (modelAndView != null
-                        && modelAndView.getView() instanceof RedirectView) {
-                    RedirectView redirect = (RedirectView) modelAndView.getView();
-                    String url = redirect.getUrl();
-                    if (url.contains("code=") || url.contains("error=")) {
-                        HttpSession session = request.getSession(false);
-                        if (session != null) {
-                            session.invalidate();
-                        }
-                    }
-                }
-            }
-        });
     }
 
     @Override

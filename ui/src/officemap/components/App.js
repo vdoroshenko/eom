@@ -11,19 +11,20 @@ export class App extends React.Component {
   // pre-render logic
   componentWillMount() {
     // the first time we load the app, we need that check
-    this.props.dispatch({type: types.USER_CHECK_LOGIN});
+    //this.props.dispatch({type: types.USER_CHECK_LOGIN});
   }
   // render
   render() {
     // show the loading state while we wait for the app to load
-    const {user, children} = this.props;
 
+    const {user, children} = this.props;
+    /*
     if (!user) {
       return (
         <ProgressBar active now={100}/>
       );
     }
-
+    */
     // render
     return (
       <div className="container">
