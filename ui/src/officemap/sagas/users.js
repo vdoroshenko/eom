@@ -48,14 +48,23 @@ export function* userLogin(action) {
 // Revoke user's token i.e. logout
 export function* userLogout(action) {
   // call the api to logout the user
-  yield call(ApiUsers.logout);
+  try {
+    //yield call(ApiUsers.logout);
+    yield call(ApiUsers.revoke, action.auth.access_token, action.auth.refresh_token);
 
-  ApiUsers._setDefaultAuth(undefined);
-  // update the state logout the user
-  yield put({
-    type: types.USER_LOGOUT_DONE
-  });
+    ApiUsers._setDefaultAuth(undefined);
+    // update the state logout the user
+    yield put({
+      type: types.USER_LOGOUT_DONE
+    });
 
-  // success
-  action.callbackSuccess();
+    // success
+    action.callbackSuccess();
+  } catch (err) {
+    let cause = err.message;
+    if (err.response && err.response.data && err.response.data.error) {
+      cause = err.response.data.error;
+    }
+    action.callbackError("Logout is failed with cause: "+cause);   // show an error when the API fails
+  }
 }

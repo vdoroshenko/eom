@@ -5,7 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.common.OAuth2RefreshToken;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -15,6 +20,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFactory;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 import org.springframework.web.servlet.view.RedirectView;
@@ -26,8 +33,12 @@ import java.security.KeyPair;
 import java.util.Optional;
 
 @Configuration
+@RestController
+@RequestMapping("/oauth")
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
+
+    private TokenStore tokenStore = new InMemoryTokenStore();
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -73,7 +84,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     public void configure(AuthorizationServerEndpointsConfigurer endpoints)
             throws Exception {
         // @formatter:off
-        endpoints.tokenStore(tokenStore())
+        endpoints.tokenStore(tokenStore)
                 .authenticationManager(authenticationManager)
                 .accessTokenConverter(jwtAccessTokenConverter());
 
@@ -89,9 +100,31 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         // @formatter:on
     }
 
-    @Bean
-    public TokenStore tokenStore() {
-        return new InMemoryTokenStore();
+
+    @RequestMapping(value = "/revoke", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    public ResponseEntity revoke(@RequestBody MultiValueMap<String,String> paramMap) {
+        if (paramMap == null) {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        String tokenType = paramMap.getFirst("token_type_hint");
+        String tokenValue = paramMap.getFirst("token");
+        if ("access_token".equalsIgnoreCase(tokenType)) {
+            revokeToken(tokenValue);
+        } else if("refresh_token".equalsIgnoreCase(tokenType)) {
+            revokeRefreshToken(tokenValue);
+        } else {
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity(HttpStatus.OK);
     }
 
+    public void revokeToken(String tokenValue) {
+        OAuth2AccessToken accessToken = tokenStore.readAccessToken(tokenValue);
+        tokenStore.removeAccessToken(accessToken);
+    }
+
+    public void revokeRefreshToken(String tokenValue) {
+        OAuth2RefreshToken refreshToken = tokenStore.readRefreshToken(tokenValue);
+        tokenStore.removeRefreshToken(refreshToken);
+    }
 }
