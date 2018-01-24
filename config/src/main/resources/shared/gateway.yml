@@ -37,5 +37,11 @@ zuul:
         stripPrefix: false
         sensitiveHeaders:
 
+    cms-service:
+            path: /cms/**
+            serviceId: cms-service
+            stripPrefix: false
+            sensitiveHeaders:
+
 server:
   port: 4000

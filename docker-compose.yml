@@ -130,6 +130,20 @@ services:
         max-size: "10m"
         max-file: "10"
 
+  cms-service:
+      environment:
+        CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
+        CMS_SERVICE_PASSWORD: $CMS_SERVICE_PASSWORD
+      image: eom/cms-service
+      restart: always
+      depends_on:
+        config:
+          condition: service_healthy
+      logging:
+        options:
+          max-size: "10m"
+          max-file: "10"
+
   monitoring:
     environment:
       CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD

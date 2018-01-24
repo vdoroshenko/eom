@@ -47,6 +47,11 @@ services:
     ports:
       - 28000:27017
 
+  cms-service:
+      build: cms-service
+      ports:
+        - 7000:7000
+
   monitoring:
     build: monitoring
 

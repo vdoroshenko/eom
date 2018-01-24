@@ -1,7 +1,7 @@
 import React,{ Component } from "react";
 import { connect } from "react-redux";
 import { push } from "react-router-redux";
-import { Field, SubmissionError, reduxForm } from "redux-form";
+import { SubmissionError, reduxForm } from "redux-form";
 import { PageHeader, Form } from "react-bootstrap";
 import FormSubmit from "./FormSubmit";
 import * as types from "../constants/actions/UserActionTypes";
@@ -19,9 +19,10 @@ export class UserLogout extends Component {
   // render
   render() {
     const {user, handleSubmit, error, invalid, submitting} = this.props;
+    const headerMsg = user ? "Logout user: "+user.username : "User didn't login.";
     return (
       <div className="page-user-login">
-        <PageHeader>User logout: {user.username}</PageHeader>
+        <PageHeader>{headerMsg}</PageHeader>
         <Form horizontal onSubmit={handleSubmit(this.formSubmit)}>
           <FormSubmit error={error} invalid={invalid} submitting={submitting} buttonSaveLoading="Submitting..."
             buttonSave="Logout"/>
@@ -37,10 +38,6 @@ export class UserLogout extends Component {
     return new Promise((resolve, reject) => {
       dispatch({
         type: types.USER_LOGOUT,
-        user: {
-          username: values.username,
-          password: values.password,
-        },
         auth: auth,
         callbackError: (error) => {
           reject(new SubmissionError({_error: error}));
@@ -55,15 +52,17 @@ export class UserLogout extends Component {
 }
 
 // decorate the form component
+
 const UserLogoutForm = reduxForm({
-  form: 'user_login',
+  form: 'user_logout' ,
+  /*
   validate: function (values) {
     const errors = {};
     if (!values.username) {
       errors.username = 'Username is required';
     }
     return errors;
-  },
+  },*/
 })(UserLogout);
 
 // export the connected class
