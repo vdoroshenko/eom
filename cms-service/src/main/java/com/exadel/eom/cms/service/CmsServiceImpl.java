@@ -59,4 +59,11 @@ public class CmsServiceImpl implements CmsService, InitializingBean {
         return storageMap.get(name);
     }
 
+    public Map<String, Map<String, String>> getStorages() {
+        return storages;
+    }
+
+    public void setStorages(Map<String, Map<String, String>> storages) {
+        this.storages = storages;
+    }
 }
