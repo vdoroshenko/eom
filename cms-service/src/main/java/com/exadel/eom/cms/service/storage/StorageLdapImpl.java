@@ -25,7 +25,7 @@ public class StorageLdapImpl implements Storage {
     }
 
     @Override
-    public String getEtag(String path) {
+    public String getHash(String path) {
         return null;
     }
 }

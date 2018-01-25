@@ -20,4 +20,4 @@ const router = (
 );
 
 // export
-export { router };
+export {router};

@@ -5,13 +5,13 @@
 print('dump start');
 
 db.officemaps.update(
-    { "_id": "demo" },
+    {"_id": "demo"},
     {
-    "_id": "demo",
-    "lastSeen": new Date(),
-    "note": "demo map",
+        "_id": "demo",
+        "lastSeen": new Date(),
+        "note": "demo map",
     },
-    { upsert: true }
+    {upsert: true}
 );
 
 print('dump complete');

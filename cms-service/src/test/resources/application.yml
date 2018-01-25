@@ -3,6 +3,7 @@ cms:
     image:
       type: fs
       uri: /
+      root: /storage
     ldap:
       type: ldap
       url: ldaps://ldap.vn.exadel.com:636

@@ -35,4 +35,4 @@ const history = syncHistoryWithStore(browserHistory, store);
 sagaMiddleware.run(sagas);
 
 // export
-export { store, history };
+export {store, history};
