@@ -30,3 +30,5 @@ cms:
       url: ldaps://ldap.vn.exadel.com:636
       userDn: cn=LDAPaccess,ou=Special,dc=exadel,dc=com
       password: ${LDAP_PASSWORD}
+      userSearchBase: ou=addressbook,dc=exadel,dc=com
+      userSearchFilter: (uid={0})

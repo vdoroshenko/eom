@@ -50,7 +50,8 @@ public class ContextSourceProperties {
 
         private String groupRoleAttribute;
 
-        public String getUserSearchBase() {
+        public String getUserSearchBase()
+        {
             return userSearchBase;
         }
 

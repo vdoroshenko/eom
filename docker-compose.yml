@@ -134,6 +134,7 @@ services:
       environment:
         CONFIG_SERVICE_PASSWORD: $CONFIG_SERVICE_PASSWORD
         CMS_SERVICE_PASSWORD: $CMS_SERVICE_PASSWORD
+        LDAP_PASSWORD: $LDAP_PASSWORD
       image: eom/cms-service
       restart: always
       depends_on:
