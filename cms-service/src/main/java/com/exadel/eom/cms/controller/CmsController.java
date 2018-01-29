@@ -2,7 +2,9 @@ package com.exadel.eom.cms.controller;
 
 import com.exadel.eom.cms.service.CmsService;
 import com.exadel.eom.cms.service.storage.Storage;
+import com.exadel.eom.cms.util.Consts;
 import com.exadel.eom.cms.util.CopyUtil;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 public class CmsController {
+    private static final String QT = "\"";
+
+    private static final String CACHE_CONTROL_REVALIDATE = "must-revalidate,proxy-revalidate";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -35,7 +41,8 @@ public class CmsController {
         String resourcePath = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
-        if (log.isDebugEnabled()) log.debug("Get resource request, storage: " + storageName + " path: " + resourcePath);
+        if (log.isDebugEnabled())
+            log.debug("Get resource request, storage: " + storageName + " path: " + resourcePath);
 
         if (resourcePath == null) {
             response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -44,15 +51,52 @@ public class CmsController {
 
         Storage storage = cmsService.getStorage(storageName);
 
-        String mimeType = storage.getMimeType(resourcePath);
-
-        String etag = storage.getHash(resourcePath);
+        if (storage == null) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return;
+        }
 
         InputStream is = storage.getResource(resourcePath);
+        if (is == null) {
+            response.setStatus(HttpStatus.NOT_FOUND.value());
+            return;
+        }
 
+        String ETagIf = request.getHeader(HttpHeaders.IF_NONE_MATCH);
+
+        String ETag = storage.getHash(resourcePath);
+
+        String ETagString = "";
+
+        if (ETag != null && !ETag.isEmpty()) {
+            ETagString = new StringBuilder().append(QT).append(ETag).append(QT).toString();
+        }
+
+        if(ETagIf != null && !ETagIf.isEmpty() && !ETagString.isEmpty() && ETagIf.equals(ETagString)) {
+            response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+            return;
+        }
+
+        String mimeType = storage.getMimeType(resourcePath);
+
+        int index = resourcePath.lastIndexOf(Consts.PATH_DELIMITER);
+        String fileName = resourcePath;
+        if(index >= 0) {
+            try {
+                fileName = resourcePath.substring(index + 1);
+            } catch (Exception e) {
+                // do nothing
+            }
+        }
         // Set the content type and attachment header.
-        response.addHeader("Content-disposition", "attachment;filename=" + resourcePath);
+        response.addHeader("Content-disposition", "attachment;filename=" + fileName);
         response.setContentType(mimeType);
+
+        // Set ETag
+        if (!ETagString.isEmpty()) {
+            response.addHeader(HttpHeaders.ETAG, ETagString);
+            response.setHeader(HttpHeaders.CACHE_CONTROL, CACHE_CONTROL_REVALIDATE);
+        }
 
         // Copy the stream to the response's output stream.
         CopyUtil.copy(is, response.getOutputStream());

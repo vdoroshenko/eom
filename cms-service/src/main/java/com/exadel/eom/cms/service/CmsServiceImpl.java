@@ -30,6 +30,10 @@ public class CmsServiceImpl implements CmsService, InitializingBean {
 
     private Map<String, Storage> storageMap = new HashMap<>(16);
 
+    public void setStorages(Map<String, Map<String, String>> storages) {
+        this.storages = storages;
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         initialize();
@@ -63,7 +67,4 @@ public class CmsServiceImpl implements CmsService, InitializingBean {
         return storages;
     }
 
-    public void setStorages(Map<String, Map<String, String>> storages) {
-        this.storages = storages;
-    }
 }
