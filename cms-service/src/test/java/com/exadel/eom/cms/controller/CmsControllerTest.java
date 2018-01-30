@@ -1,6 +1,10 @@
 package com.exadel.eom.cms.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.exadel.eom.cms.service.CmsService;
+import com.exadel.eom.cms.service.storage.Storage;
+import com.exadel.eom.cms.util.Consts;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import org.apache.http.HttpHeaders;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,46 +13,121 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.InputStream;
+import java.util.Map;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CmsControllerTest {
 
-	private static final ObjectMapper mapper = new ObjectMapper();
-
-	/*
 	@InjectMocks
-	private OfficemapController officemapController;
+	private CmsController cmsController;
 
 	@Mock
-	private OfficemapService officemapService;
+	private CmsService cmsService;
 
 	private MockMvc mockMvc;
 
-	@Before
+	private class FakeStorage implements Storage {
+		@Override
+		public void initialize(Map<String, String> params) {
+			// nothing to do in fake implementation
+		}
+
+		@Override
+		public InputStream getResource(String path) {
+            if (FILE_NAME.equalsIgnoreCase(path)) {
+				return new ByteInputStream(RAWJPEG, RAWJPEG.length);
+			} else {
+            	return null;
+			}
+		}
+
+		@Override
+		public String getMimeType(String path) {
+			return Consts.JPEG_MIMETYPE;
+		}
+
+		@Override
+		public String getHash(String path) {
+			return ETAG;
+		}
+	}
+
+	private final static byte[] RAWJPEG= {
+			(byte)0xFF, (byte)0xD8, (byte)0xFF, (byte)0xE0, (byte)0x00, (byte)0x10, (byte)0x4A, (byte)0x46, (byte)0x49, (byte)0x46, (byte)0x00, (byte)0x01, (byte)0x01, (byte)0x01, (byte)0x00, (byte)0x48, (byte)0x00, (byte)0x48, (byte)0x00, (byte)0x00,
+			(byte)0xFF, (byte)0xDB, (byte)0x00, (byte)0x43, (byte)0x00, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
+			(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
+			(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF,
+			(byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xFF, (byte)0xC2, (byte)0x00, (byte)0x0B, (byte)0x08, (byte)0x00, (byte)0x01, (byte)0x00, (byte)0x01, (byte)0x01, (byte)0x01,
+			(byte)0x11, (byte)0x00, (byte)0xFF, (byte)0xC4, (byte)0x00, (byte)0x14, (byte)0x10, (byte)0x01, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00,
+			(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x00, (byte)0xFF, (byte)0xDA, (byte)0x00, (byte)0x08, (byte)0x01, (byte)0x01, (byte)0x00, (byte)0x01, (byte)0x3F, (byte)0x10
+	};
+
+    private final static String ETAG = "17i2ghb2hj1g34gbu12i42i14gbrhxbc2uh21orphc";
+
+    private final static String FILE_NAME = "fake_data.jpg";
+
+    @Before
 	public void setup() {
 		initMocks(this);
-		this.mockMvc = MockMvcBuilders.standaloneSetup(officemapController).build();
+		this.mockMvc = MockMvcBuilders.standaloneSetup(cmsController).build();
 	}
 
 	@Test
-	public void shouldGetOfficemapByName() throws Exception {
+	public void shouldGetJpegWithEtagApproach() throws Exception {
 
-		final Officemap omap = new Officemap();
-		omap.setName("test");
+		final Storage storage = new FakeStorage();
 
-		when(officemapService.findByName(omap.getName())).thenReturn(omap);
+		when(cmsService.getStorage("fake_storage_name")).thenReturn(storage);
 
-		mockMvc.perform(get("/" + omap.getName()))
-				.andExpect(jsonPath("$.name").value(omap.getName()))
-				.andExpect(status().isOk());
+		// without if_none_match header
+		mockMvc.perform(get("/fake_storage_name/" + FILE_NAME ))
+                .andExpect(status().isOk())
+				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.JPEG_MIMETYPE))
+                .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
+                .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
+				.andExpect(new ResultMatcher() {
+				    public void match(MvcResult result) throws Exception {
+                        //Open the binary response in memory
+                        byte[] res = result.getResponse().getContentAsByteArray();
+                        assertArrayEquals(res, RAWJPEG);
+                    }
+                });
+        // with if_none_match header, and etag is match
+        mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )
+                    .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"\""))
+                .andExpect(status().isNotModified());
+
+        // with if_none_match header, and etag isn't match
+        mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )
+                    .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"123\""))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.JPEG_MIMETYPE))
+                .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
+                .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
+                .andExpect(new ResultMatcher() {
+                    public void match(MvcResult result) throws Exception {
+                        //Open the binary response in memory
+                        byte[] res = result.getResponse().getContentAsByteArray();
+                        assertArrayEquals(res, RAWJPEG);
+                    }
+                });
+
+        // wrong path
+        mockMvc.perform(get("/fake_storage_name/badname" + FILE_NAME ))
+                .andExpect(status().isNotFound());
 	}
-	*/
 }

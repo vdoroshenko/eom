@@ -25,8 +25,6 @@ import java.security.NoSuchAlgorithmException;
 public class CmsController {
     private static final String QT = "\"";
 
-    private static final String CACHE_CONTROL_REVALIDATE = "must-revalidate,proxy-revalidate";
-
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -38,14 +36,27 @@ public class CmsController {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
-        String resourcePath = (String) request.getAttribute(
+        String fullResourcePath = (String) request.getAttribute(
                 HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
 
         if (log.isDebugEnabled())
-            log.debug("Get resource request, storage: " + storageName + " path: " + resourcePath);
+            log.debug("Get resource request, storage: " + storageName + " path: " + fullResourcePath);
 
+        if (fullResourcePath == null) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return;
+        }
+
+        int prefixLen = storageName.length() + 2;
+
+        String resourcePath = null;
+        try {
+            resourcePath = fullResourcePath.substring(prefixLen);
+        } catch (Exception e) {
+            log.error("getResource(...) bad resource path: "+fullResourcePath, e);
+        }
         if (resourcePath == null) {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
             return;
         }
 
@@ -95,7 +106,7 @@ public class CmsController {
         // Set ETag
         if (!ETagString.isEmpty()) {
             response.addHeader(HttpHeaders.ETAG, ETagString);
-            response.setHeader(HttpHeaders.CACHE_CONTROL, CACHE_CONTROL_REVALIDATE);
+            response.setHeader(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE);
         }
 
         // Copy the stream to the response's output stream.

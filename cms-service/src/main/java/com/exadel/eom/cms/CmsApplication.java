@@ -1,6 +1,5 @@
 package com.exadel.eom.cms;
 
-import com.exadel.eom.common.service.security.CustomUserInfoTokenServices;
 import feign.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -20,7 +19,6 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
-import org.springframework.security.oauth2.provider.token.ResourceServerTokenServices;
 
 @SpringBootApplication
 @EnableResourceServer
@@ -54,11 +52,12 @@ public class CmsApplication extends ResourceServerConfigurerAdapter {
 		return new OAuth2RestTemplate(clientCredentialsResourceDetails());
 	}
 
+	/*
 	@Bean
 	public ResourceServerTokenServices tokenServices() {
 		return new CustomUserInfoTokenServices(sso.getUserInfoUri(), sso.getClientId());
 	}
-
+	*/
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()

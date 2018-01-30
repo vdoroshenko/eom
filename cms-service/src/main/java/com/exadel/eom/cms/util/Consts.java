@@ -20,6 +20,8 @@ public final class Consts {
 
     public static final String DIGEST_ALG = "MD5";
 
+    public static final String CACHE_CONTROL_REVALIDATE = "must-revalidate,proxy-revalidate";
+
     private Consts(){
         //this prevents even the native class from
         //calling this ctor as well :
