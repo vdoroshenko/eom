@@ -7,12 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.HashMap;
 import java.util.Map;
 
 public class StorageFsImpl implements Storage {
@@ -21,39 +23,53 @@ public class StorageFsImpl implements Storage {
 
     private FileSystem fs = null;
 
+    private boolean bFsCreated = false;
+
     private String root;
 
-    private String uriName;
+    private String uriString;
 
     @Override
     public void initialize(Map<String, String> params) {
         root = params.get("root"); if(root == null) root = "/";
-        uriName = params.get("uri");
-        if (uriName == null || uriName.isEmpty()) {
-            uriName = "[default]";
+        uriString = params.get("uri");
+        if (uriString == null || uriString.isEmpty()) {
+            uriString = "[default]";
             fs = FileSystems.getDefault();
         } else {
-            URI uri = URI.create(uriName);
+            URI uri = URI.create(uriString);
             try {
                 fs = FileSystems.getFileSystem(uri);
-            } catch (FileSystemNotFoundException e) {
+            } catch (FileSystemNotFoundException expected) {
                 // go ahead
             } catch (Exception e) {
-                log.error("Can't get file system for uri: " + uriName, e);
+                log.error("Can't get file system for uri: " + uriString, e);
                 return;
             }
             if (fs == null) {
                 // try create
                 try {
-                    Map<String, String> env = null;
+                    Map<String, String> env = new HashMap<>();
                     String senv = params.get("env");
                     if (senv != null) {
                         env = ParseUtil.string2map(senv, Consts.SMAP_DELIM);
                     }
                     fs = FileSystems.newFileSystem(uri, env);
+                    bFsCreated = true;
                 } catch (Exception e) {
-                    log.error("Can't create new file system for uri: " + uriName, e);
+                    log.error("Can't create new file system for uri: " + uriString, e);
                 }
+            }
+        }
+    }
+
+    @Override
+    public void close() {
+        if (bFsCreated) {
+            try {
+                 fs.close();
+            } catch (Exception e) {
+                log.error("Can't close file system for uri: " + uriString, e);
             }
         }
     }
@@ -71,8 +87,10 @@ public class StorageFsImpl implements Storage {
             String[] pathArr = path.split(Consts.PATH_DELIMITER);
             int i = pathArr.length - 2;
             do {
-                String subPath = ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i) + Consts.MIME_EXT;
-                InputStream isf = openFile(subPath);
+                StringBuilder subPath = new StringBuilder();
+                if(i >= 0) subPath.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
+                subPath.append(Consts.MIME_EXT);
+                InputStream isf = openFile(subPath.toString());
                 if (isf != null) {
                     try {
                         return CopyUtil.readAsString(isf, Consts.UTF_8);
@@ -80,11 +98,11 @@ public class StorageFsImpl implements Storage {
                         try {
                             isf.close();
                         } catch (Exception e) {
-                            log.error("Close stream fail, fs: "+uriName+" path: "+root + subPath, e);
+                            log.error("Close stream fail, fs: "+ uriString +" path: "+root + subPath, e);
                         }
                     }
                 }
-            } while (--i >= 0);
+            } while (i-- >= 0);
             return Consts.BIN_MIMETYPE;
         } else {
             try {
@@ -93,7 +111,7 @@ public class StorageFsImpl implements Storage {
                 try {
                     is.close();
                 } catch (Exception e) {
-                    log.error("Close stream fail, fs: "+uriName+" path: "+root + mimePath, e);
+                    log.error("Close stream fail, fs: "+ uriString +" path: "+root + mimePath, e);
                 }
             }
         }
@@ -104,7 +122,7 @@ public class StorageFsImpl implements Storage {
         String hashPath = path + Consts.HASH_EXT;
         InputStream is = openFile(hashPath);
         if (is == null) {
-            if(log.isInfoEnabled()) log.info("Hash isn't found for fs: "+uriName+" path: "+hashPath);
+            if(log.isInfoEnabled()) log.info("Hash isn't found for fs: "+ uriString +" path: "+hashPath);
             InputStream isf = openFile(path);
             if (isf != null) {
                 try {
@@ -120,7 +138,7 @@ public class StorageFsImpl implements Storage {
                     try {
                         isf.close();
                     } catch (Exception e) {
-                        log.error("Close stream fail, fs: "+uriName+" path: "+root + path, e);
+                        log.error("Close stream fail, fs: "+ uriString +" path: "+root + path, e);
                     }
                 }
             }
@@ -131,7 +149,7 @@ public class StorageFsImpl implements Storage {
                 try {
                     is.close();
                 } catch (Exception e) {
-                    log.error("Close stream fail, fs: "+uriName+" path: "+root + hashPath, e);
+                    log.error("Close stream fail, fs: "+ uriString +" path: "+root + hashPath, e);
                 }
             }
         }
@@ -144,7 +162,7 @@ public class StorageFsImpl implements Storage {
         try {
             return Files.newInputStream(fpath, StandardOpenOption.READ);
         } catch (Exception e) {
-            if(log.isDebugEnabled()) log.debug("Open failed, fs: "+uriName+" path: "+filePath, e);
+            if(log.isDebugEnabled()) log.debug("Open failed, fs: "+ uriString +" path: "+filePath, e);
             return null;
         }
     }
@@ -164,13 +182,13 @@ public class StorageFsImpl implements Storage {
             os = Files.newOutputStream(fpath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
             return CopyUtil.copy(is, os);
         } catch (Exception e) {
-            log.error("Save failed, fs: "+uriName+" path: "+filePath, e);
+            log.error("Save failed, fs: "+ uriString +" path: "+filePath, e);
             return 0L;
         } finally {
             if (os != null) try {
                 os.close();
             } catch(Exception e) {
-                log.error("Close stream fail, fs: "+uriName+" path: "+filePath, e);
+                log.error("Close stream fail, fs: "+ uriString +" path: "+filePath, e);
             }
         }
     }
@@ -181,7 +199,7 @@ public class StorageFsImpl implements Storage {
         try {
             return Files.readAttributes(fpath, BasicFileAttributes.class);
         } catch (Exception e) {
-            log.error("Read attributes failed, fs: "+uriName+" path: "+filePath, e);
+            log.error("Read attributes failed, fs: "+ uriString +" path: "+filePath, e);
             return null;
         }
     }

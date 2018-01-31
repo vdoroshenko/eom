@@ -58,6 +58,11 @@ public class StorageLdapImpl implements Storage {
     }
 
     @Override
+    public void close() {
+        // nothing to do
+    }
+
+    @Override
     public InputStream getResource(String path) {
         String[] pathArr = path.split(Consts.PATH_DELIMITER);
         if(pathArr.length == 2) {

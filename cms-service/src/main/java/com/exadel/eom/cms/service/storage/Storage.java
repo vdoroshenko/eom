@@ -8,4 +8,5 @@ public interface Storage {
     InputStream getResource(String path);
     String getMimeType(String path);
     String getHash(String path);
+    void close();
 }

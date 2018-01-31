@@ -47,6 +47,11 @@ public class CmsControllerTest {
 		}
 
 		@Override
+		public void close() {
+			// stub
+		}
+
+		@Override
 		public InputStream getResource(String path) {
             if (FILE_NAME.equalsIgnoreCase(path)) {
 				return new ByteInputStream(RAWJPEG, RAWJPEG.length);
