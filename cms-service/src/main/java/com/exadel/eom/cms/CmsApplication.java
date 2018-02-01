@@ -1,5 +1,6 @@
 package com.exadel.eom.cms;
 
+import com.exadel.eom.cms.configuration.StorageSource;
 import feign.RequestInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +12,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.DefaultOAuth2ClientContext;
@@ -19,6 +21,8 @@ import org.springframework.security.oauth2.client.token.grant.client.ClientCrede
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
+
+import java.util.Map;
 
 @SpringBootApplication
 @EnableResourceServer
@@ -29,8 +33,16 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @EnableConfigurationProperties
 public class CmsApplication extends ResourceServerConfigurerAdapter {
 
+    private static final String PUBLIC_ACCESS = "publicAccess";
+    private static final String GET_STRING = "get";
+    private static final String PUT_STRING = "put";
+    private static final String ALL_STRING = "all";
+
 	@Autowired
 	private ResourceServerProperties sso;
+
+	@Autowired
+	private StorageSource storageSource;
 
 	public static void main(String[] args) {
 		SpringApplication.run(CmsApplication.class, args);
@@ -61,7 +73,30 @@ public class CmsApplication extends ResourceServerConfigurerAdapter {
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests()
-				//.antMatchers("/" , "/demo").permitAll()
 				.anyRequest().authenticated();
+
+        Map<String, Map<String, String>> configuration = storageSource.getConfiguration();
+        if(configuration != null) {
+            configuration.forEach((key, params) -> {
+                final String access = params.get(PUBLIC_ACCESS);
+                if(access != null) {
+                    try {
+                        if(ALL_STRING.equalsIgnoreCase(access)) {
+                            http.authorizeRequests().antMatchers("/" + key).permitAll();
+                        } else {
+                            if (GET_STRING.equalsIgnoreCase(access) || PUT_STRING.equalsIgnoreCase(access)) {
+                                http.authorizeRequests().antMatchers(HttpMethod.GET, "/" + key).permitAll();
+                            }
+                            if (PUT_STRING.equalsIgnoreCase(access)) {
+                                http.authorizeRequests().antMatchers(HttpMethod.POST, "/" + key).permitAll();
+                                http.authorizeRequests().antMatchers(HttpMethod.PUT, "/" + key).permitAll();
+                            }
+                        }
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            });
+        }
 	}
 }

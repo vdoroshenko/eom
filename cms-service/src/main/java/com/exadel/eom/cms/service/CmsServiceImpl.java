@@ -1,6 +1,7 @@
 package com.exadel.eom.cms.service;
 
 import com.exadel.eom.cms.configuration.StorageConfiguration;
+import com.exadel.eom.cms.configuration.StorageSource;
 import com.exadel.eom.cms.service.storage.Storage;
 import com.exadel.eom.cms.service.storage.StorageFsImpl;
 import com.exadel.eom.cms.service.storage.StorageLdapImpl;
@@ -21,7 +22,7 @@ public class CmsServiceImpl implements CmsService, InitializingBean, DisposableB
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-	private StorageConfiguration storageConfiguration;
+	private StorageSource storageSource;
 
     private Map<String, Storage> storageMap = new HashMap<>(16);
 
@@ -33,17 +34,17 @@ public class CmsServiceImpl implements CmsService, InitializingBean, DisposableB
     @Override
     public void destroy() {
         storageMap.forEach((key, value) -> {
-            if(log.isInfoEnabled()) log.info("Try close FS: "+key);
+            if(log.isInfoEnabled()) log.info("Trying close storage: "+key);
             value.close();
         });
     }
 
     private void initialize() throws Exception {
-        Map<String, Map<String, String>> storages = storageConfiguration.getStorages();
-        if(storages == null) {
+        Map<String, Map<String, String>> configuration = storageSource.getConfiguration();
+        if(configuration == null) {
             throw new Exception("initialize(): the storages is not initialized in configuration.");
         } else {
-            storages.forEach((key, params) -> {
+            configuration.forEach((key, params) -> {
                 String type = params.get("type");
                 if("fs".equalsIgnoreCase(type)) {
                     Storage storage = new StorageFsImpl();
@@ -63,11 +64,4 @@ public class CmsServiceImpl implements CmsService, InitializingBean, DisposableB
         return storageMap.get(name);
     }
 
-    public StorageConfiguration getStorageConfiguration() {
-        return storageConfiguration;
-    }
-
-    public void setStorageConfiguration(StorageConfiguration storageConfiguration) {
-        this.storageConfiguration = storageConfiguration;
-    }
 }

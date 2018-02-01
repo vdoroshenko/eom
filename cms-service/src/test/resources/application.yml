@@ -15,16 +15,18 @@ cms:
   storages:
     image:
       type: fs
-      #uri: /
-      root: /home/vd/ASSET/WS/src/java/Exadel/EOM/cms-service/target/test-classes/storages/images/
+      #root: /foo/bar/fake/images/
     image-zip:
       type: fs
-      uri: jar:file:/home/vd/ASSET/WS/src/java/Exadel/EOM/cms-service/target/test-classes/storages/images1.zip
-      root: /images/
+      #uri: jar:file:/foo/bar/fake/images1.zip
+      #root: /images/
+      ##env: key1=val1&key2=val2&keyN=valN
+      publicAccess: get
+    # Configure embedded LDAP storage #
     ldap:
       type: ldap
-      url: ldaps://ldap.vn.exadel.com:636
-      userDn: cn=LDAPaccess,ou=Special,dc=exadel,dc=com
-      password: ${LDAP_PASSWORD}
-      userSearchBase: ou=addressbook,dc=exadel,dc=com
+      url: ldap://localhost:12345
+      userDn: uid=admin
+      password: secret
+      userSearchBase: dc=memorynotfound,dc=com
       userSearchFilter: (uid={0})

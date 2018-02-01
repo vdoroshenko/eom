@@ -22,9 +22,9 @@ import javax.naming.directory.SearchControls;
 
 public class StorageLdapImpl implements Storage {
 
-    private static final Integer MRT_SECONDS = 10000;
+    private static final Integer MRT_MS = 10000;
 
-    private static final String PHOTO = "jpegPhoto";
+    public static final String PHOTO = "jpegPhoto";
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
@@ -59,7 +59,7 @@ public class StorageLdapImpl implements Storage {
 
     @Override
     public void close() {
-        // nothing to do
+        // stub
     }
 
     @Override
@@ -76,7 +76,7 @@ public class StorageLdapImpl implements Storage {
     protected InputStream getLdapAttribute(final String uid, final String attrName ) {
         SearchControls sc = new SearchControls();
         sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-        sc.setTimeLimit(MRT_SECONDS);
+        sc.setTimeLimit(MRT_MS);
         sc.setCountLimit(1);
         sc.setReturningAttributes(new String[]{attrName});
 

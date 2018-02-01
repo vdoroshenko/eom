@@ -65,7 +65,7 @@ public class StorageFsImpl implements Storage {
 
     @Override
     public void close() {
-        if (bFsCreated) {
+        if (bFsCreated && fs != null) {
             try {
                  fs.close();
             } catch (Exception e) {

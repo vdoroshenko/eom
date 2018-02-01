@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "cms")
-public class StorageConfiguration {
+public class StorageConfiguration implements StorageSource {
     private Map<String, Map<String, String>> storages;
 
     public Map<String, Map<String, String>> getStorages() {
@@ -16,5 +16,10 @@ public class StorageConfiguration {
 
     public void setStorages(Map<String, Map<String, String>> storages) {
         this.storages = storages;
+    }
+
+    @Override
+    public Map<String, Map<String, String>> getConfiguration() {
+        return storages;
     }
 }

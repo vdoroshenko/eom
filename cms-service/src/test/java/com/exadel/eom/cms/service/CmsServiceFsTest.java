@@ -1,6 +1,7 @@
 package com.exadel.eom.cms.service;
 
 import com.exadel.eom.cms.configuration.StorageConfiguration;
+import com.exadel.eom.cms.configuration.StorageSource;
 import com.exadel.eom.cms.service.storage.Storage;
 import com.exadel.eom.cms.util.Consts;
 import com.exadel.eom.cms.util.CopyUtil;
@@ -22,15 +23,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-@RunWith(SpringRunner.class)
-//@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CmsServiceFsTest {
 
     @InjectMocks
 	private CmsServiceImpl cmsService;
 
     @Mock
-    private StorageConfiguration storageConfiguration;
+    private StorageSource storageConfiguration;
 
     @Before
     public void setup() throws Exception {
@@ -62,9 +61,8 @@ public class CmsServiceFsTest {
         storages.put("image-zip",images_zip);
         storages.put("ldap",ldap);
 
-        when(storageConfiguration.getStorages()).thenReturn(storages);
+        when(storageConfiguration.getConfiguration()).thenReturn(storages);
 
-        cmsService.setStorageConfiguration(storageConfiguration);
         cmsService.afterPropertiesSet();
     }
 
@@ -77,7 +75,7 @@ public class CmsServiceFsTest {
 	}
 
     @Test
-    public void shouldGetFsStorageJar() throws Exception  {
+    public void shouldGetFsStorageZip() throws Exception  {
         Storage storage = cmsService.getStorage("image-zip");
         assertNotNull(storage);
 
