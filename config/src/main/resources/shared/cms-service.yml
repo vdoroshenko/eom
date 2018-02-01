@@ -23,8 +23,9 @@ cms:
   storages:
     image:
       type: fs
-      #uri: /
-      root: /app/storage
+      uri: jar:file:/store/images.zip
+      root: /images/
+      publicAccess: get
     ldap:
       type: ldap
       url: ldaps://ldap.vn.exadel.com:636
