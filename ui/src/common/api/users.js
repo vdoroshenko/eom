@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as uri from "../constants/uris/UserURI";
 
-const baseURI = "http://localhost:4000/";
+const baseURI = process.env.API_URI;
 // API Users static class
 export default class ApiUsers {
   // add/edit a user
@@ -11,7 +11,7 @@ export default class ApiUsers {
     params.append('grant_type', "password");
     params.append('username', username);
     params.append('password', password);
-    return axios.post(url, params, {headers:{'Authorization':'Basic '+uri.AUTH_TOKEN}});
+    return axios.post(url, params, {headers:{'Authorization':'Basic '+process.env.API_AUTH_TOKEN}});
   }
 
   static _setDefaultAuth(token) {
@@ -24,7 +24,7 @@ export default class ApiUsers {
     let params = new URLSearchParams();
     params.append('grant_type', "refresh_token");
     params.append('refresh_token', refreshToken);
-    return axios.post(url, params, {headers:{'Authorization':'Basic '+uri.AUTH_TOKEN}});
+    return axios.post(url, params, {headers:{'Authorization':'Basic '+process.env.API_AUTH_TOKEN}});
   }
 
   static introspection(token='') {
@@ -32,7 +32,7 @@ export default class ApiUsers {
     let params = new URLSearchParams();
     params.append('token_type_hint', "access_token");
     params.append('token', token);
-    return axios.post(url, params, {headers:{'Authorization':'Basic '+uri.AUTH_TOKEN}});
+    return axios.post(url, params, {headers:{'Authorization':'Basic '+process.env.API_AUTH_TOKEN}});
   }
 
   // revoke token

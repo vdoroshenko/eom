@@ -3,6 +3,7 @@
 var app_root = 'src'; // the app root folder: src, etc
 var path = require('path');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
+var webpack = require("webpack");
 
 module.exports = {
   app_root: app_root, // the app root folder, needed by the other webpack configs
@@ -40,6 +41,13 @@ module.exports = {
     contentBase: __dirname + '/public',
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: JSON.stringify('development'),
+        API_AUTH_TOKEN: JSON.stringify('YXBpLWNsaWVudDpjbGllbnRwYXNzd29yZA=='),
+        API_URI: JSON.stringify('http://localhost:4000/')
+      }
+    }),
     new CleanWebpackPlugin(['css/main.css', 'js/bundle.js'], {
       root: __dirname + '/public',
       verbose: true,

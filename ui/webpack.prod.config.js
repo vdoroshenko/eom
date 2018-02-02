@@ -8,14 +8,11 @@ module.exports.entry = [
   __dirname + '/' + module.exports.app_root + '/officemap' + '/index.js'
 ];
 
-// production env
-module.exports.plugins.push(
-  new webpack.DefinePlugin({
-    'process.env': {
-      NODE_ENV: JSON.stringify('production'),
-    }
-  })
-);
+// override process env to production
+module.exports.plugins[0].process.env.NODE_ENV = JSON.stringify('production');
+module.exports.plugins[0].process.env.API_AUTH_TOKEN = JSON.stringify(process.env.API_AUTH_TOKEN);
+module.exports.plugins[0].process.env.API_URI = JSON.stringify(process.env.API_URI);
+
 
 // compress the js file
 module.exports.plugins.push(
@@ -36,3 +33,4 @@ module.exports.module.loaders[1] = {
 module.exports.plugins.push(
   new ExtractTextPlugin('../css/main.css')
 );
+
