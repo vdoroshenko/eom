@@ -10,9 +10,13 @@ module.exports.entry = [
 ];
 
 // override process env to production
-// module.exports.plugins[0].process.env.NODE_ENV = JSON.stringify('development');
-module.exports.plugins[0].process.env.API_AUTH_TOKEN = JSON.stringify(process.env.API_AUTH_TOKEN);
-module.exports.plugins[0].process.env.API_URI = JSON.stringify(process.env.API_URI);
+module.exports.plugins[0] = new webpack.DefinePlugin({
+  'process.env': {
+    NODE_ENV: JSON.stringify('development'),
+    API_AUTH_TOKEN: JSON.stringify(process.env.API_AUTH_TOKEN),
+    API_URI: JSON.stringify(process.env.API_URI)
+  }
+});
 
 // export css to a separate file
 module.exports.module.loaders[1] = {
