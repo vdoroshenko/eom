@@ -10,7 +10,7 @@ module.exports.entry = [
 ];
 
 // override process env to production
-module.exports.plugins[0].process.env.NODE_ENV = JSON.stringify('development');
+// module.exports.plugins[0].process.env.NODE_ENV = JSON.stringify('development');
 module.exports.plugins[0].process.env.API_AUTH_TOKEN = JSON.stringify(process.env.API_AUTH_TOKEN);
 module.exports.plugins[0].process.env.API_URI = JSON.stringify(process.env.API_URI);
 
