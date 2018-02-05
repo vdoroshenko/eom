@@ -72,8 +72,6 @@ public class CmsApplication extends ResourceServerConfigurerAdapter {
 	*/
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.anyRequest().authenticated();
 
         Map<String, Map<String, String>> configuration = storageSource.getConfiguration();
         if(configuration != null) {
@@ -82,14 +80,14 @@ public class CmsApplication extends ResourceServerConfigurerAdapter {
                 if(access != null) {
                     try {
                         if(ALL_STRING.equalsIgnoreCase(access)) {
-                            http.authorizeRequests().antMatchers("/" + key).permitAll();
+                            http.authorizeRequests().antMatchers("/" + key + "/**").permitAll();
                         } else {
                             if (GET_STRING.equalsIgnoreCase(access) || PUT_STRING.equalsIgnoreCase(access)) {
-                                http.authorizeRequests().antMatchers(HttpMethod.GET, "/" + key).permitAll();
+                                http.authorizeRequests().antMatchers(HttpMethod.GET, "/" + key + "/**").permitAll();
                             }
                             if (PUT_STRING.equalsIgnoreCase(access)) {
-                                http.authorizeRequests().antMatchers(HttpMethod.POST, "/" + key).permitAll();
-                                http.authorizeRequests().antMatchers(HttpMethod.PUT, "/" + key).permitAll();
+                                http.authorizeRequests().antMatchers(HttpMethod.POST, "/" + key + "/**").permitAll();
+                                http.authorizeRequests().antMatchers(HttpMethod.PUT, "/" + key + "/**").permitAll();
                             }
                         }
                     } catch (Exception e) {
@@ -98,5 +96,8 @@ public class CmsApplication extends ResourceServerConfigurerAdapter {
                 }
             });
         }
+
+        http.authorizeRequests()
+                .anyRequest().authenticated();
 	}
 }
