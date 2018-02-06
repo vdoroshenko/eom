@@ -21,6 +21,10 @@ public class StorageFsImpl implements Storage {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
+    private static final String METADATA_DIR_CHECK1 = Consts.METADATA_DIR + Consts.PATH_DELIMITER;
+
+    private static final String METADATA_DIR_CHECK2 = Consts.PATH_DELIMITER + Consts.METADATA_DIR + Consts.PATH_DELIMITER;
+
     private FileSystem fs = null;
 
     private boolean bFsCreated = false;
@@ -76,20 +80,28 @@ public class StorageFsImpl implements Storage {
 
     @Override
     public InputStream getResource(String path) {
+        if (path.startsWith(METADATA_DIR_CHECK1) || path.contains(METADATA_DIR_CHECK2)) {
+            return null;
+        }
         return openFile(path);
     }
 
     @Override
     public String getMimeType(String path) {
-        String mimePath = path + Consts.MIME_EXT;
-        InputStream is = openFile(mimePath);
+        String[] pathArr = path.split(Consts.PATH_DELIMITER);
+        int i = pathArr.length - 2;
+        StringBuilder mimePath = new StringBuilder();
+        if(i >= 0) mimePath.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
+        mimePath.append(Consts.METADATA_DIR).append(Consts.PATH_DELIMITER)
+                .append(pathArr[pathArr.length-1])
+                .append(Consts.MIME_EXT);
+
+        InputStream is = openFile(mimePath.toString());
         if (is == null) {
-            String[] pathArr = path.split(Consts.PATH_DELIMITER);
-            int i = pathArr.length - 2;
             do {
                 StringBuilder subPath = new StringBuilder();
                 if(i >= 0) subPath.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
-                subPath.append(Consts.MIME_EXT);
+                subPath.append(Consts.METADATA_DIR).append(Consts.PATH_DELIMITER).append(Consts.MIME_EXT);
                 InputStream isf = openFile(subPath.toString());
                 if (isf != null) {
                     try {
@@ -119,7 +131,19 @@ public class StorageFsImpl implements Storage {
 
     @Override
     public String getHash(String path) {
-        String hashPath = path + Consts.HASH_EXT;
+        if (path.startsWith(METADATA_DIR_CHECK1) || path.contains(METADATA_DIR_CHECK2)) {
+            return null;
+        }
+
+        String[] pathArr = path.split(Consts.PATH_DELIMITER);
+        int i = pathArr.length - 2;
+        StringBuilder hashPathb = new StringBuilder();
+        if(i >= 0) hashPathb.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
+        hashPathb.append(Consts.METADATA_DIR).append(Consts.PATH_DELIMITER)
+                .append(pathArr[pathArr.length-1])
+                .append(Consts.HASH_EXT);
+
+        String hashPath = hashPathb.toString();
         InputStream is = openFile(hashPath);
         if (is == null) {
             if(log.isInfoEnabled()) log.info("Hash isn't found for fs: "+ uriString +" path: "+hashPath);

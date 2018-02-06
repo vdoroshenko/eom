@@ -15,33 +15,36 @@ public class ParseUtil {
         return map;
     }
 
-    public static String concat(List<String> arr, String delim, int from, int to) {
+    public static StringBuilder concat(List<String> arr, String delim, int from, int to) {
         StringBuilder builder = new StringBuilder();
-        boolean nf = false;
-        int idx = 0;
-        for (String s : arr) {
-            if ((idx < from) || ((idx > to) && (to >= 0))) {
-                idx++;
-                continue;
-            }
-            idx++;
 
+        if(from >= arr.size()) return builder;
+        if(to < 0) return builder;
+        if(to >= arr.size()) to = arr.size() - 1;
+        if(from > to) return builder;
+
+        boolean nf = false;
+
+        for(int i = from; i <= to; i++) {
             if (nf) {
                 builder.append(delim);
             }
             nf = true;
-            builder.append(s);
+            builder.append(arr.get(i));
         }
-        return builder.toString();
+        return builder;
     }
 
-    public static String concat(String[] arr, String delim, int from, int to) {
-
-        if(from >= arr.length) return "";
-        if(to < 0 || to >= arr.length) to = arr.length - 1;
-        if(from > to) return "";
-        boolean nf = false;
+    public static StringBuilder concat(String[] arr, String delim, int from, int to) {
         StringBuilder builder = new StringBuilder();
+
+        if(from >= arr.length) return builder;
+        if(to < 0) return builder;
+        if(to >= arr.length) to = arr.length - 1;
+        if(from > to) return builder;
+
+        boolean nf = false;
+
         for(int i = from; i <= to; i++) {
             if (nf) {
                 builder.append(delim);
@@ -49,7 +52,7 @@ public class ParseUtil {
             nf = true;
             builder.append(arr[i]);
         }
-        return builder.toString();
+        return builder;
     }
 
     public static List<String> split(String path, String delim) {

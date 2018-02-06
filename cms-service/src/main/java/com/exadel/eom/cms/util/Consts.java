@@ -2,9 +2,11 @@ package com.exadel.eom.cms.util;
 
 public final class Consts {
 
-    public static final String MIME_EXT = ".__mime";
+    public static final String METADATA_DIR = ".__cmsmd";
 
-    public static final String HASH_EXT = ".__hash";
+    public static final String MIME_EXT = ".mime";
+
+    public static final String HASH_EXT = ".hash";
 
     public static final String SMAP_DELIM = "&";
 

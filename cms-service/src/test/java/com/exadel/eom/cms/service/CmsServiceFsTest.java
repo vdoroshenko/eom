@@ -5,6 +5,7 @@ import com.exadel.eom.cms.configuration.StorageSource;
 import com.exadel.eom.cms.service.storage.Storage;
 import com.exadel.eom.cms.util.Consts;
 import com.exadel.eom.cms.util.CopyUtil;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,6 +65,11 @@ public class CmsServiceFsTest {
         when(storageConfiguration.getConfiguration()).thenReturn(storages);
 
         cmsService.afterPropertiesSet();
+    }
+
+    @After
+    public void close() {
+        cmsService.destroy();
     }
 
 	@Test
