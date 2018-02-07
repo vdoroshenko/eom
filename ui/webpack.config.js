@@ -44,7 +44,7 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify('development'),
-        API_AUTH_TOKEN: JSON.stringify('YXBpLWNsaWVudDpjbGllbnRwYXNzd29yZA=='),
+        API_AUTH_TOKEN: JSON.stringify('YXBpLWNsaWVudDpjbGllbnRwYXNzd29yZA=='), /*base64 token for credential auth:{username:'api-client',password:'clientpassword'}*/
         API_URI: JSON.stringify('http://localhost:4000/')
       }
     }),
