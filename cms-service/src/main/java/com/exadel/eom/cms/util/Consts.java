@@ -2,7 +2,7 @@ package com.exadel.eom.cms.util;
 
 public final class Consts {
 
-    public static final String METADATA_DIR = ".__cmsmd";
+    public static final String METADATA_DIR = ".cmsmd";
 
     public static final String MIME_EXT = ".mime";
 
