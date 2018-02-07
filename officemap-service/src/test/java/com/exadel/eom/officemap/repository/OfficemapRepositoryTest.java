@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
@@ -31,11 +32,12 @@ public class OfficemapRepositoryTest {
 
 	private Officemap getStubOfficemap() {
 
-		Officemap account = new Officemap();
-		account.setName("test");
-		account.setNote("test note");
-		account.setLastSeen(new Date());
+		Officemap map = new Officemap();
+		map.setName("test");
+		map.setNote("test note");
+		map.setLastSeen(new Date());
+		map.setEmployeeLocationList(new ArrayList<>());
 
-		return account;
+		return map;
 	}
 }

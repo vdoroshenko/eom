@@ -15,7 +15,6 @@ public class OfficemapController {
 	@Autowired
 	private OfficemapService officemapService;
 
-	@PreAuthorize("#oauth2.hasScope('server')")
 	@RequestMapping(path = "/{name}", method = RequestMethod.GET)
 	public Officemap getOfficemapByName(@PathVariable String name) {
 		return officemapService.findByName(name);
