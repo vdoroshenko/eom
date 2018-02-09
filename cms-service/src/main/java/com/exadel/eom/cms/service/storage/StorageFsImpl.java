@@ -1,8 +1,8 @@
 package com.exadel.eom.cms.service.storage;
 
+import com.exadel.eom.cms.util.Consts;
 import com.exadel.eom.cms.util.CopyUtil;
 import com.exadel.eom.cms.util.ParseUtil;
-import com.exadel.eom.cms.util.Consts;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,13 +17,19 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StorageFsImpl implements Storage {
+public final class StorageFsImpl implements Storage {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
 
-    private static final String METADATA_DIR_CHECK1 = Consts.METADATA_DIR + Consts.PATH_DELIMITER;
+    private static final String METADATA_DIR_CHECK1 = Consts.File.METADATA_DIR + Consts.File.PATH_DELIMITER;
 
-    private static final String METADATA_DIR_CHECK2 = Consts.PATH_DELIMITER + Consts.METADATA_DIR + Consts.PATH_DELIMITER;
+    private static final String METADATA_DIR_CHECK2 = Consts.File.PATH_DELIMITER + Consts.File.METADATA_DIR + Consts.File.PATH_DELIMITER;
+
+    private static final String FNAME = "\"name\":";
+
+    private static final String SIZE = "\"size\":";
+
+    private static final String FOLDER = "\"folder\":";
 
     private FileSystem fs = null;
 
@@ -35,7 +41,7 @@ public class StorageFsImpl implements Storage {
 
     @Override
     public void initialize(Map<String, String> params) {
-        root = params.get("root"); if(root == null) root = "/";
+        root = params.get("root");
         uriString = params.get("uri");
         if (uriString == null || uriString.isEmpty()) {
             uriString = "[default]";
@@ -62,7 +68,15 @@ public class StorageFsImpl implements Storage {
                     bFsCreated = true;
                 } catch (Exception e) {
                     log.error("Can't create new file system for uri: " + uriString, e);
+                    return;
                 }
+            }
+        }
+        if (root == null) {
+            Iterable<Path> dirs = fs.getRootDirectories();
+            for (Path name : dirs) {
+                root = name.toString(); /* get first root */
+                break;
             }
         }
     }
@@ -71,7 +85,7 @@ public class StorageFsImpl implements Storage {
     public void close() {
         if (bFsCreated && fs != null) {
             try {
-                 fs.close();
+                fs.close();
             } catch (Exception e) {
                 log.error("Can't close file system for uri: " + uriString, e);
             }
@@ -88,20 +102,22 @@ public class StorageFsImpl implements Storage {
 
     @Override
     public String getMimeType(String path) {
-        String[] pathArr = path.split(Consts.PATH_DELIMITER);
+        String[] pathArr = path.split(Consts.File.PATH_DELIMITER);
         int i = pathArr.length - 2;
         StringBuilder mimePath = new StringBuilder();
-        if(i >= 0) mimePath.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
-        mimePath.append(Consts.METADATA_DIR).append(Consts.PATH_DELIMITER)
-                .append(pathArr[pathArr.length-1])
-                .append(Consts.MIME_EXT);
+        if (i >= 0)
+            mimePath.append(ParseUtil.concat(pathArr, Consts.File.PATH_DELIMITER, 0, i)).append(Consts.File.PATH_DELIMITER);
+        mimePath.append(Consts.File.METADATA_DIR).append(Consts.File.PATH_DELIMITER)
+                .append(pathArr[pathArr.length - 1])
+                .append(Consts.File.MIME_EXT);
 
         InputStream is = openFile(mimePath.toString());
         if (is == null) {
             do {
                 StringBuilder subPath = new StringBuilder();
-                if(i >= 0) subPath.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
-                subPath.append(Consts.METADATA_DIR).append(Consts.PATH_DELIMITER).append(Consts.MIME_EXT);
+                if (i >= 0)
+                    subPath.append(ParseUtil.concat(pathArr, Consts.File.PATH_DELIMITER, 0, i)).append(Consts.File.PATH_DELIMITER);
+                subPath.append(Consts.File.METADATA_DIR).append(Consts.File.PATH_DELIMITER).append(Consts.File.MIME_EXT);
                 InputStream isf = openFile(subPath.toString());
                 if (isf != null) {
                     try {
@@ -110,12 +126,12 @@ public class StorageFsImpl implements Storage {
                         try {
                             isf.close();
                         } catch (Exception e) {
-                            log.error("Close stream fail, fs: "+ uriString +" path: "+root + subPath, e);
+                            log.error("Close stream fail, fs: " + uriString + " path: " + root + subPath, e);
                         }
                     }
                 }
             } while (i-- >= 0);
-            return Consts.BIN_MIMETYPE;
+            return Consts.MimeType.BIN;
         } else {
             try {
                 return CopyUtil.readAsString(is, Consts.UTF_8);
@@ -123,7 +139,7 @@ public class StorageFsImpl implements Storage {
                 try {
                     is.close();
                 } catch (Exception e) {
-                    log.error("Close stream fail, fs: "+ uriString +" path: "+root + mimePath, e);
+                    log.error("Close stream fail, fs: " + uriString + " path: " + root + mimePath, e);
                 }
             }
         }
@@ -135,18 +151,19 @@ public class StorageFsImpl implements Storage {
             return null;
         }
 
-        String[] pathArr = path.split(Consts.PATH_DELIMITER);
+        String[] pathArr = path.split(Consts.File.PATH_DELIMITER);
         int i = pathArr.length - 2;
         StringBuilder hashPathb = new StringBuilder();
-        if(i >= 0) hashPathb.append(ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, i)).append(Consts.PATH_DELIMITER);
-        hashPathb.append(Consts.METADATA_DIR).append(Consts.PATH_DELIMITER)
-                .append(pathArr[pathArr.length-1])
-                .append(Consts.HASH_EXT);
+        if (i >= 0)
+            hashPathb.append(ParseUtil.concat(pathArr, Consts.File.PATH_DELIMITER, 0, i)).append(Consts.File.PATH_DELIMITER);
+        hashPathb.append(Consts.File.METADATA_DIR).append(Consts.File.PATH_DELIMITER)
+                .append(pathArr[pathArr.length - 1])
+                .append(Consts.File.HASH_EXT);
 
         String hashPath = hashPathb.toString();
         InputStream is = openFile(hashPath);
         if (is == null) {
-            if(log.isInfoEnabled()) log.info("Hash isn't found for fs: "+ uriString +" path: "+hashPath);
+            if (log.isInfoEnabled()) log.info("Hash isn't found for fs: " + uriString + " path: " + hashPath);
             InputStream isf = openFile(path);
             if (isf != null) {
                 try {
@@ -162,7 +179,7 @@ public class StorageFsImpl implements Storage {
                     try {
                         isf.close();
                     } catch (Exception e) {
-                        log.error("Close stream fail, fs: "+ uriString +" path: "+root + path, e);
+                        log.error("Close stream fail, fs: " + uriString + " path: " + root + path, e);
                     }
                 }
             }
@@ -173,11 +190,48 @@ public class StorageFsImpl implements Storage {
                 try {
                     is.close();
                 } catch (Exception e) {
-                    log.error("Close stream fail, fs: "+ uriString +" path: "+root + hashPath, e);
+                    log.error("Close stream fail, fs: " + uriString + " path: " + root + hashPath, e);
                 }
             }
         }
         return null;
+    }
+
+    @Override
+    public String list(String path) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(Consts.Json.BRT_OPN);
+
+        String filePath = root + path;
+        Path fpath = fs.getPath(filePath);
+
+        boolean bComma = false;
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(fpath)) {
+            for (Path entry : stream) {
+                if (Consts.File.METADATA_DIR.equals(entry.getFileName())) continue;
+
+                BasicFileAttributes bfa = Files.readAttributes(entry, BasicFileAttributes.class);
+
+                if(bComma) {
+                    sb.append(Consts.Json.CMA);
+                } else {
+                    bComma = true;
+                }
+
+                sb.append(Consts.Json.BR_OPN);
+                sb.append(FNAME).append(entry.getFileName());
+                sb.append(Consts.Json.CMA);
+                sb.append(FOLDER).append(bfa.isDirectory());
+                sb.append(Consts.Json.CMA);
+                sb.append(SIZE).append(bfa.size());
+                sb.append(Consts.Json.BR_CLS);
+            }
+        } catch(IOException e) {
+            log.warn("Scan dir was failed, fs: " + uriString + " path: " + filePath, e);
+        }
+
+        sb.append(Consts.Json.BRT_CLS);
+        return sb.toString();
     }
 
     private InputStream openFile(String path) {
@@ -186,7 +240,7 @@ public class StorageFsImpl implements Storage {
         try {
             return Files.newInputStream(fpath, StandardOpenOption.READ);
         } catch (Exception e) {
-            if(log.isDebugEnabled()) log.debug("Open failed, fs: "+ uriString +" path: "+filePath, e);
+            if (log.isDebugEnabled()) log.debug("Open failed, fs: " + uriString + " path: " + filePath, e);
             return null;
         }
     }
@@ -195,8 +249,8 @@ public class StorageFsImpl implements Storage {
         String filePath = root + path;
         Path fpath = fs.getPath(filePath);
 
-        String[] pathArr = path.split(Consts.PATH_DELIMITER);
-        String dirPath = root+ParseUtil.concat(pathArr, Consts.PATH_DELIMITER, 0, pathArr.length - 2);
+        String[] pathArr = path.split(Consts.File.PATH_DELIMITER);
+        String dirPath = root + ParseUtil.concat(pathArr, Consts.File.PATH_DELIMITER, 0, pathArr.length - 2);
         Path fdpath = fs.getPath(dirPath);
 
         OutputStream os = null;
@@ -206,13 +260,13 @@ public class StorageFsImpl implements Storage {
             os = Files.newOutputStream(fpath, StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
             return CopyUtil.copy(is, os);
         } catch (Exception e) {
-            log.error("Save failed, fs: "+ uriString +" path: "+filePath, e);
+            log.error("Save failed, fs: " + uriString + " path: " + filePath, e);
             return 0L;
         } finally {
             if (os != null) try {
                 os.close();
-            } catch(Exception e) {
-                log.error("Close stream fail, fs: "+ uriString +" path: "+filePath, e);
+            } catch (Exception e) {
+                log.error("Close stream fail, fs: " + uriString + " path: " + filePath, e);
             }
         }
     }
@@ -223,7 +277,7 @@ public class StorageFsImpl implements Storage {
         try {
             return Files.readAttributes(fpath, BasicFileAttributes.class);
         } catch (Exception e) {
-            log.error("Read attributes failed, fs: "+ uriString +" path: "+filePath, e);
+            log.error("Read attributes failed, fs: " + uriString + " path: " + filePath, e);
             return null;
         }
     }

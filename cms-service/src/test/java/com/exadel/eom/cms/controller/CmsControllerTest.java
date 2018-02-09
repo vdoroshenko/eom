@@ -61,14 +61,19 @@ public class CmsControllerTest {
 
 		@Override
 		public String getMimeType(String path) {
-			return Consts.JPEG_MIMETYPE;
+			return Consts.MimeType.JPEG;
 		}
 
 		@Override
 		public String getHash(String path) {
 			return ETAG;
 		}
-	}
+
+        @Override
+        public String list(String path) {
+            return "[]";
+        }
+    }
 
 	private final static byte[] RAWJPEG= {
 			(byte)0xFF, (byte)0xD8, (byte)0xFF, (byte)0xE0, (byte)0x00, (byte)0x10, (byte)0x4A, (byte)0x46, (byte)0x49, (byte)0x46, (byte)0x00, (byte)0x01, (byte)0x01, (byte)0x01, (byte)0x00, (byte)0x48, (byte)0x00, (byte)0x48, (byte)0x00, (byte)0x00,
@@ -100,7 +105,7 @@ public class CmsControllerTest {
 		// without if_none_match header
 		mockMvc.perform(get("/fake_storage_name/" + FILE_NAME ))
                 .andExpect(status().isOk())
-				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.JPEG_MIMETYPE))
+				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JPEG))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
 				.andExpect(new ResultMatcher() {
@@ -119,7 +124,7 @@ public class CmsControllerTest {
         mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )
                     .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"123\""))
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.JPEG_MIMETYPE))
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JPEG))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
                 .andExpect(new ResultMatcher() {

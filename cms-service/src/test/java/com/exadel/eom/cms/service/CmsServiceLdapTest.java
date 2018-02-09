@@ -44,7 +44,7 @@ public class CmsServiceLdapTest {
         assertNotNull(is);
 
         String type = storage.getMimeType(path);
-        assertEquals(Consts.JPEG_MIMETYPE, type);
+        assertEquals(Consts.MimeType.JPEG, type);
 
         String hash = storage.getHash(path);
         assertNotNull(hash);
@@ -74,7 +74,7 @@ public class CmsServiceLdapTest {
         assertNotNull(hash);
 
         String type = storage.getMimeType(path);
-        assertEquals(Consts.TEXT_MIMETYPE, type);
+        assertEquals(Consts.MimeType.TEXT, type);
     }
 
     static private String convertStreamToString(java.io.InputStream is) {
