@@ -14,6 +14,9 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,6 +33,12 @@ public final class StorageFsImpl implements Storage {
     private static final String SIZE = "\"size\":";
 
     private static final String FOLDER = "\"folder\":";
+
+    private static final String CREATION_TIME = "\"creationTime\":";
+
+    private static final String LAST_MODIFIED_TIME = "\"lastModifiedTime\":";
+
+    private static final String MD_DIR_CHECK_NAME = Consts.File.METADATA_DIR + Consts.File.PATH_DELIMITER;
 
     private FileSystem fs = null;
 
@@ -199,18 +208,22 @@ public final class StorageFsImpl implements Storage {
 
     @Override
     public String list(String path) {
-        StringBuilder sb = new StringBuilder();
+        final DateFormat df = new SimpleDateFormat(Consts.Json.DATE_FORMAT);
+        final StringBuilder sb = new StringBuilder();
         sb.append(Consts.Json.BRT_OPN);
 
         String filePath = root + path;
         Path fpath = fs.getPath(filePath);
 
+        FileTime ft;
         boolean bComma = false;
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(fpath)) {
             for (Path entry : stream) {
-                if (Consts.File.METADATA_DIR.equals(entry.getFileName())) continue;
-
+                String fileName = entry.getFileName().toString();
                 BasicFileAttributes bfa = Files.readAttributes(entry, BasicFileAttributes.class);
+                boolean isDir = bfa.isDirectory();
+
+                if ((MD_DIR_CHECK_NAME.equals(fileName) || Consts.File.METADATA_DIR.equals(fileName)) && isDir) continue;
 
                 if(bComma) {
                     sb.append(Consts.Json.CMA);
@@ -219,15 +232,26 @@ public final class StorageFsImpl implements Storage {
                 }
 
                 sb.append(Consts.Json.BR_OPN);
-                sb.append(FNAME).append(entry.getFileName());
+
+                sb.append(FNAME).append(Consts.Json.QT).append(fileName).append(Consts.Json.QT);
                 sb.append(Consts.Json.CMA);
-                sb.append(FOLDER).append(bfa.isDirectory());
+                sb.append(FOLDER).append(isDir);
                 sb.append(Consts.Json.CMA);
                 sb.append(SIZE).append(bfa.size());
+                ft = bfa.creationTime();
+                if(ft != null) {
+                    sb.append(Consts.Json.CMA);
+                    sb.append(CREATION_TIME).append(Consts.Json.QT).append(df.format(ft.toMillis())).append(Consts.Json.QT);
+                }
+                ft = bfa.lastModifiedTime();
+                if (ft != null) {
+                    sb.append(Consts.Json.CMA);
+                    sb.append(LAST_MODIFIED_TIME).append(Consts.Json.QT).append(df.format(ft.toMillis())).append(Consts.Json.QT);
+                }
                 sb.append(Consts.Json.BR_CLS);
             }
         } catch(IOException e) {
-            log.warn("Scan dir was failed, fs: " + uriString + " path: " + filePath, e);
+            if(log.isWarnEnabled()) log.warn("Scan dir was failed, fs: " + uriString + " path: " + filePath, e);
         }
 
         sb.append(Consts.Json.BRT_CLS);

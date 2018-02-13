@@ -11,6 +11,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -88,7 +89,18 @@ public class CmsServiceFsTest {
         testStorage(storage);
     }
 
-	private void testStorage(Storage storage) {
+    @Test
+    public void shouldListFsStorageZip() throws Exception {
+        Storage storage = cmsService.getStorage("image-zip");
+        assertNotNull(storage);
+        String json = storage.list("floors");
+        assertNotNull(json);
+        final String expected = "[{\"name\":\"floor2.png\",\"folder\":false,\"size\":609461,\"lastModifiedTime\":\"2018-01-29T16:09:17.000Z\"},{\"name\":\"floor1.png\",\"folder\":false,\"size\":621385,\"lastModifiedTime\":\"2018-01-29T16:09:11.000Z\"}]";
+        JSONAssert.assertEquals(expected, json, false);
+    }
+
+
+    private void testStorage(Storage storage) {
         InputStream is1 = storage.getResource("floors/floor1.png");
         assertNotNull(is1);
         String hash = storage.getHash("floors/floor1.png");

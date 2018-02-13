@@ -63,6 +63,8 @@ public final class Consts {
 
         public static final Character COL = ':';
 
+        public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
+
         private Json(){
             //this prevents even the native class from
             //calling this ctor as well :

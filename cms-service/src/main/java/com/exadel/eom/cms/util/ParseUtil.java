@@ -2,7 +2,7 @@ package com.exadel.eom.cms.util;
 
 import java.util.*;
 
-public class ParseUtil {
+public final class ParseUtil {
     public static Map<String, String> string2map(String text, String delimiter) {
         String pattern = " *"+delimiter+" *";
         Map<String, String> map = new LinkedHashMap<>();

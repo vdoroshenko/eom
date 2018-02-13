@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class CopyUtil {
+public final class CopyUtil {
     private static final int COPY_BUF_LEN = 0x7000; // 7*4k
     private static final int READ_BUF_LEN = 0x400; // 1k
 

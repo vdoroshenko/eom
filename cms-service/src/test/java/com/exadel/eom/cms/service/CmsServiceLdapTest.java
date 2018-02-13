@@ -4,9 +4,12 @@ import com.exadel.eom.cms.service.storage.Storage;
 import com.exadel.eom.cms.service.storage.StorageLdapImpl;
 import com.exadel.eom.cms.util.Consts;
 import com.exadel.eom.cms.util.CopyUtil;
+import org.json.JSONException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -75,6 +78,26 @@ public class CmsServiceLdapTest {
 
         String type = storage.getMimeType(path);
         assertEquals(Consts.MimeType.TEXT, type);
+    }
+
+    @Test
+    public void shouldListLdapAttrByUid() throws JSONException {
+        Storage storage = cmsService.getStorage("ldap");
+        assertNotNull(storage);
+
+        String path = "";
+        String s = storage.list(path);
+        assertNotNull(s);
+        String expected = "[{\"uid\":\"jahn\"},{\"uid\":\"jihn\"},{\"uid\":\"john\"}]";
+        JSONAssert.assertEquals(expected, s, false);
+
+        path = "john";
+        s = storage.list(path);
+        assertNotNull(s);
+
+        path = "jahn";
+        s = storage.list(path);
+        assertNotNull(s);
     }
 
     static private String convertStreamToString(java.io.InputStream is) {

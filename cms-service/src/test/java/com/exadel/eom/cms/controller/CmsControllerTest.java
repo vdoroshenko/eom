@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -71,7 +72,7 @@ public class CmsControllerTest {
 
         @Override
         public String list(String path) {
-            return "[]";
+            return EMPTY_ARRAY;
         }
     }
 
@@ -88,6 +89,10 @@ public class CmsControllerTest {
     private final static String ETAG = "17i2ghb2hj1g34gbu12i42i14gbrhxbc2uh21orphc";
 
     private final static String FILE_NAME = "fake_data.jpg";
+
+    private final static String ETAG_EMPTY_ARRAY = "d751713988987e9331980363e24189ce";
+
+    private final static String EMPTY_ARRAY = "[]";
 
     @Before
 	public void setup() {
@@ -138,5 +143,44 @@ public class CmsControllerTest {
         // wrong path
         mockMvc.perform(get("/fake_storage_name/badname" + FILE_NAME ))
                 .andExpect(status().isNotFound());
+	}
+
+	@Test
+	public void shouldGetDirListWithEtagApproach() throws Exception {
+        final Storage storage = new FakeStorage();
+
+        when(cmsService.getStorage("fake_storage_name")).thenReturn(storage);
+
+        // without if_none_match header
+        mockMvc.perform(get("/fake_storage_name/?cmd=ls"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JSON))
+                .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG_EMPTY_ARRAY+"\""))
+                .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
+                .andExpect(new ResultMatcher() {
+                    public void match(MvcResult result) throws Exception {
+                        String res = result.getResponse().getContentAsString();
+                        assertEquals(EMPTY_ARRAY, res);
+                    }
+                });
+
+        // with if_none_match header, and etag is match
+        mockMvc.perform(get("/fake_storage_name/?cmd=ls" )
+                .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG_EMPTY_ARRAY+"\""))
+                .andExpect(status().isNotModified());
+
+        // with if_none_match header, and etag isn't match
+        mockMvc.perform(get("/fake_storage_name/?cmd=ls" )
+                .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG_EMPTY_ARRAY+"123\""))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JSON))
+                .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG_EMPTY_ARRAY+"\""))
+                .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
+                .andExpect(new ResultMatcher() {
+                    public void match(MvcResult result) throws Exception {
+                        String res = result.getResponse().getContentAsString();
+                        assertEquals(EMPTY_ARRAY, res);
+                    }
+                });
 	}
 }

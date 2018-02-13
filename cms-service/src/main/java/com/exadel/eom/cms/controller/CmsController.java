@@ -18,6 +18,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 
 @RestController
 public class CmsController {
@@ -52,7 +53,7 @@ public class CmsController {
         try {
             resourcePath = fullResourcePath.substring(prefixLen);
         } catch (Exception e) {
-            log.error("getResource(...) bad resource path: "+fullResourcePath, e);
+            log.error("Get resource request, bad resource path: "+fullResourcePath, e);
         }
         if (resourcePath == null) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -68,11 +69,40 @@ public class CmsController {
 
         // Execute command
         if (Consts.Command.LIST.equalsIgnoreCase(cmd)) {
-            response.setContentType(Consts.MimeType.JSON);
 
             String result = storage.list(resourcePath);
-            InputStream is = new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8.name()));
+            ByteArrayInputStream is = new ByteArrayInputStream(result.getBytes(StandardCharsets.UTF_8.name()));
 
+            try {
+                String ETagIf = request.getHeader(HttpHeaders.IF_NONE_MATCH);
+
+                StringBuilder sb = new StringBuilder();
+                CopyUtil.calcHexHash(is, Consts.DIGEST_ALG, sb);
+                String ETag = sb.toString();
+
+                String ETagString = "";
+
+                if (ETag != null && !ETag.isEmpty()) {
+                    ETagString = new StringBuilder().append(QT).append(ETag).append(QT).toString();
+                }
+
+                if (ETagIf != null && !ETagIf.isEmpty() && !ETagString.isEmpty() && ETagIf.equals(ETagString)) {
+                    response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
+                    return;
+                }
+
+                // Set ETag
+                if (!ETagString.isEmpty()) {
+                    response.addHeader(HttpHeaders.ETAG, ETagString);
+                    response.setHeader(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE);
+                }
+
+            } catch (NoSuchAlgorithmException e) {
+                log.error("Get resource request, bad digest algorithm path: "+fullResourcePath, e);
+            }
+
+            response.setContentType(Consts.MimeType.JSON);
+            is.reset();
             CopyUtil.copy(is, response.getOutputStream());
             is.close();
 
@@ -128,4 +158,21 @@ public class CmsController {
         response.flushBuffer();
     }
 
+    @RequestMapping(path = "/{storage}/**", method = {RequestMethod.PUT, RequestMethod.POST})
+    public void putResource(
+            @PathVariable("storage") String storageName, /* storage name from config */
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        // TODO: implementation
+    }
+
+    @RequestMapping(path = "/{storage}/**", method = RequestMethod.DELETE)
+    public void deleteResource(
+            @PathVariable("storage") String storageName, /* storage name from config */
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        // TODO: implementation
+    }
 }
