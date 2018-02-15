@@ -216,6 +216,9 @@ public final class StorageLdapImpl implements Storage {
                     }
             );
             final StringBuilder sb = new StringBuilder();
+            sb.append(Consts.Json.BR_OPN);
+            sb.append(Consts.Json.PATH).append(Consts.Json.QT).append(path).append(Consts.Json.QT);
+            sb.append(Consts.Json.CMA).append(Consts.Json.LS);
             for (Map<String,String> v : value) {
                 sb.append(Consts.Json.BRT_OPN);
 
@@ -235,6 +238,7 @@ public final class StorageLdapImpl implements Storage {
                 }
                 sb.append(Consts.Json.BRT_CLS);
             }
+            sb.append(Consts.Json.BR_CLS);
             return sb.toString();
         } else if (pathArr.length == 0) {
             final String attrName = "uid";
@@ -259,6 +263,8 @@ public final class StorageLdapImpl implements Storage {
             );
 
             final StringBuilder sb = new StringBuilder();
+            sb.append(Consts.Json.BR_OPN);
+            sb.append(Consts.Json.LS);
             sb.append(Consts.Json.BRT_OPN);
 
             boolean bComma = false;
@@ -276,6 +282,7 @@ public final class StorageLdapImpl implements Storage {
                 sb.append(Consts.Json.BR_CLS);
             }
             sb.append(Consts.Json.BRT_CLS);
+            sb.append(Consts.Json.BR_CLS);
             return sb.toString();
         } else {
             if(log.isWarnEnabled()) log.warn("Bad resource path: [" + path + "] LDAP url:" + url);

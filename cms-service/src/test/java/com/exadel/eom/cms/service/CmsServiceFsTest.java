@@ -95,7 +95,7 @@ public class CmsServiceFsTest {
         assertNotNull(storage);
         String json = storage.list("floors");
         assertNotNull(json);
-        final String expected = "[{\"name\":\"floor2.png\",\"folder\":false,\"size\":609461,\"lastModifiedTime\":\"2018-01-29T16:09:17.000Z\"},{\"name\":\"floor1.png\",\"folder\":false,\"size\":621385,\"lastModifiedTime\":\"2018-01-29T16:09:11.000Z\"}]";
+        final String expected = "{\"path\":\"floors\",\"ls\":[{\"name\":\"floor2.png\",\"folder\":false,\"size\":609461,\"lastModifiedTime\":\"2018-01-29T16:09:17.000Z\"},{\"name\":\"floor1.png\",\"folder\":false,\"size\":621385,\"lastModifiedTime\":\"2018-01-29T16:09:11.000Z\"}]}";
         JSONAssert.assertEquals(expected, json, false);
     }
 

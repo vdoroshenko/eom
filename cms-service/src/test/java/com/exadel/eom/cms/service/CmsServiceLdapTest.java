@@ -88,7 +88,7 @@ public class CmsServiceLdapTest {
         String path = "";
         String s = storage.list(path);
         assertNotNull(s);
-        String expected = "[{\"uid\":\"jahn\"},{\"uid\":\"jihn\"},{\"uid\":\"john\"}]";
+        String expected = "{\"ls\":[{\"uid\":\"jahn\"},{\"uid\":\"jihn\"},{\"uid\":\"john\"}]}";
         JSONAssert.assertEquals(expected, s, false);
 
         path = "john";

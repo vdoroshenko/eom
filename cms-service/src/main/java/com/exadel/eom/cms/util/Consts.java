@@ -65,6 +65,10 @@ public final class Consts {
 
         public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'";
 
+        public static final String PATH = "\"path\":";
+
+        public static final String LS = "\"ls\":";
+
         private Json(){
             //this prevents even the native class from
             //calling this ctor as well :

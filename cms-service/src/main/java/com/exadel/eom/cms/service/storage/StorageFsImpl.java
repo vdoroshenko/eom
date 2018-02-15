@@ -210,6 +210,11 @@ public final class StorageFsImpl implements Storage {
     public String list(String path) {
         final DateFormat df = new SimpleDateFormat(Consts.Json.DATE_FORMAT);
         final StringBuilder sb = new StringBuilder();
+        sb.append(Consts.Json.BR_OPN);
+
+        sb.append(Consts.Json.PATH).append(Consts.Json.QT).append(path).append(Consts.Json.QT);
+        sb.append(Consts.Json.CMA).append(Consts.Json.LS);
+
         sb.append(Consts.Json.BRT_OPN);
 
         String filePath = root + path;
@@ -255,6 +260,7 @@ public final class StorageFsImpl implements Storage {
         }
 
         sb.append(Consts.Json.BRT_CLS);
+        sb.append(Consts.Json.BR_CLS);
         return sb.toString();
     }
 
