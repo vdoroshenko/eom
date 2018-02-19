@@ -113,12 +113,10 @@ public class CmsControllerTest {
 				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JPEG))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
-				.andExpect(new ResultMatcher() {
-				    public void match(MvcResult result) throws Exception {
+				.andExpect(result -> {
                         //Open the binary response in memory
                         byte[] res = result.getResponse().getContentAsByteArray();
                         assertArrayEquals(res, RAWJPEG);
-                    }
                 });
         // with if_none_match header, and etag is match
         mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )
@@ -132,12 +130,10 @@ public class CmsControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JPEG))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
-                .andExpect(new ResultMatcher() {
-                    public void match(MvcResult result) throws Exception {
+                .andExpect(result -> {
                         //Open the binary response in memory
                         byte[] res = result.getResponse().getContentAsByteArray();
                         assertArrayEquals(res, RAWJPEG);
-                    }
                 });
 
         // wrong path
@@ -157,11 +153,9 @@ public class CmsControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JSON))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG_EMPTY_ARRAY+"\""))
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
-                .andExpect(new ResultMatcher() {
-                    public void match(MvcResult result) throws Exception {
+                .andExpect(result -> {
                         String res = result.getResponse().getContentAsString();
                         assertEquals(EMPTY_ARRAY, res);
-                    }
                 });
 
         // with if_none_match header, and etag is match
@@ -176,11 +170,9 @@ public class CmsControllerTest {
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JSON))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG_EMPTY_ARRAY+"\""))
                 .andExpect(header().string(HttpHeaders.CACHE_CONTROL, Consts.CACHE_CONTROL_REVALIDATE))
-                .andExpect(new ResultMatcher() {
-                    public void match(MvcResult result) throws Exception {
+                .andExpect(result -> {
                         String res = result.getResponse().getContentAsString();
                         assertEquals(EMPTY_ARRAY, res);
-                    }
                 });
 	}
 }
