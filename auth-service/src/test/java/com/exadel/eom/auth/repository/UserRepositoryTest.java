@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 
 //@RunWith(SpringJUnit4ClassRunner.class)
@@ -26,8 +28,8 @@ public class UserRepositoryTest {
 		user.setPassword("password");
 		repository.save(user);
 
-		User found = repository.findOne(user.getUsername());
-		assertEquals(user.getUsername(), found.getUsername());
-		assertEquals(user.getPassword(), found.getPassword());
+		Optional<User> found = repository.findById(user.getUsername());
+		assertEquals(user.getUsername(), found.get().getUsername());
+		assertEquals(user.getPassword(), found.get().getPassword());
 	}
 }

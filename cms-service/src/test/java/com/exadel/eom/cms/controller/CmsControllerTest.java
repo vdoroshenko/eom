@@ -25,6 +25,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 
@@ -108,7 +109,7 @@ public class CmsControllerTest {
 		when(cmsService.getStorage("fake_storage_name")).thenReturn(storage);
 
 		// without if_none_match header
-		mockMvc.perform(get("/fake_storage_name/" + FILE_NAME ))
+		mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )).andDo(print())
                 .andExpect(status().isOk())
 				.andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JPEG))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
@@ -120,12 +121,12 @@ public class CmsControllerTest {
                 });
         // with if_none_match header, and etag is match
         mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )
-                    .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"\""))
+                    .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"\"")).andDo(print())
                 .andExpect(status().isNotModified());
 
         // with if_none_match header, and etag isn't match
         mockMvc.perform(get("/fake_storage_name/" + FILE_NAME )
-                    .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"123\""))
+                    .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG+"123\"")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JPEG))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG+"\""))
@@ -137,7 +138,7 @@ public class CmsControllerTest {
                 });
 
         // wrong path
-        mockMvc.perform(get("/fake_storage_name/badname" + FILE_NAME ))
+        mockMvc.perform(get("/fake_storage_name/badname" + FILE_NAME )).andDo(print())
                 .andExpect(status().isNotFound());
 	}
 
@@ -148,7 +149,7 @@ public class CmsControllerTest {
         when(cmsService.getStorage("fake_storage_name")).thenReturn(storage);
 
         // without if_none_match header
-        mockMvc.perform(get("/fake_storage_name/?cmd=ls"))
+        mockMvc.perform(get("/fake_storage_name/?cmd=ls")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JSON))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG_EMPTY_ARRAY+"\""))
@@ -160,12 +161,12 @@ public class CmsControllerTest {
 
         // with if_none_match header, and etag is match
         mockMvc.perform(get("/fake_storage_name/?cmd=ls" )
-                .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG_EMPTY_ARRAY+"\""))
+                .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG_EMPTY_ARRAY+"\"")).andDo(print())
                 .andExpect(status().isNotModified());
 
         // with if_none_match header, and etag isn't match
         mockMvc.perform(get("/fake_storage_name/?cmd=ls" )
-                .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG_EMPTY_ARRAY+"123\""))
+                .header(HttpHeaders.IF_NONE_MATCH, "\""+ETAG_EMPTY_ARRAY+"123\"")).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(header().string(HttpHeaders.CONTENT_TYPE, Consts.MimeType.JSON))
                 .andExpect(header().string(HttpHeaders.ETAG, "\""+ETAG_EMPTY_ARRAY+"\""))

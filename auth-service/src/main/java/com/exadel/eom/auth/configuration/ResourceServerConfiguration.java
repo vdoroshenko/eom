@@ -19,14 +19,18 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.R
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
-    @Autowired
-    private MongoUserDetailsService userDetailsService;
+    private final MongoUserDetailsService userDetailsService;
+
+    private final CustomAuthenticationProvider customAuthProvider;
+
+    private final ContextSourceProperties conf;
 
     @Autowired
-    private CustomAuthenticationProvider customAuthProvider;
-
-    @Autowired
-    private ContextSourceProperties conf;
+    public ResourceServerConfiguration(MongoUserDetailsService userDetailsService, CustomAuthenticationProvider customAuthProvider, ContextSourceProperties conf) {
+        this.userDetailsService = userDetailsService;
+        this.customAuthProvider = customAuthProvider;
+        this.conf = conf;
+    }
 
     @Autowired
     public void configureGlobal(final AuthenticationManagerBuilder auth) throws Exception {

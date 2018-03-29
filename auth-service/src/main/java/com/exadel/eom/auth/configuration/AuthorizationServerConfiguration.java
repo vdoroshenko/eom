@@ -40,11 +40,15 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     private TokenStore tokenStore = new InMemoryTokenStore();
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+
+    private final Environment env;
 
     @Autowired
-    private Environment env;
+    public AuthorizationServerConfiguration(AuthenticationManager authenticationManager, Environment env) {
+        this.authenticationManager = authenticationManager;
+        this.env = env;
+    }
 
     @Bean
     public JwtAccessTokenConverter jwtAccessTokenConverter() {

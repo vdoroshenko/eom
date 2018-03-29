@@ -9,6 +9,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -22,8 +24,8 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void create(User user) {
 
-		User existing = repository.findOne(user.getUsername());
-		Assert.isNull(existing, "user already exists: " + user.getUsername());
+		Optional<User> existing = repository.findById(user.getUsername());
+		Assert.isTrue(!existing.isPresent(), "user already exists: " + user.getUsername());
 
 		String hash = encoder.encode(user.getPassword());
 		user.setPassword(hash);
@@ -35,10 +37,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user) {
-        User existing = repository.findOne(user.getUsername());
+        Optional<User> existing = repository.findById(user.getUsername());
         Assert.notNull(existing, "user doesn't exist: " + user.getUsername());
         String hash = encoder.encode(user.getPassword());
-        if(!existing.getPassword().equals(user.getPassword()) && !existing.getPassword().equals(hash)) {
+        if(!existing.get().getPassword().equals(user.getPassword()) && !existing.get().getPassword().equals(hash)) {
             user.setPassword(hash);
             log.info("password hash was updated for: {}", user.getUsername());
         }
@@ -47,19 +49,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User find(String username) {
-        return repository.findOne(username);
+        return repository.findById(username).get();
     }
 
 	@Override
 	public void delete(String username) {
-		repository.delete(username);
+		User u = new User();
+		u.setUsername(username);
+		repository.delete(u);
 	}
 
 	@Override
 	public void upsert(User user) {
-		User existing = repository.findOne(user.getUsername());
+		Optional<User> existing = repository.findById(user.getUsername());
 		String hash = encoder.encode(user.getPassword());
-		if (existing == null) {
+		if (!existing.isPresent()) {
 
 			user.setPassword(hash);
 
@@ -68,9 +72,9 @@ public class UserServiceImpl implements UserService {
 			log.info("new user has been created: {}", user.getUsername());
 		} else {
             log.info("user already exists: {}", user.getUsername());
-			if(!existing.getPassword().equals(hash)) {
-				existing.setPassword(hash);
-				repository.save(existing);
+			if(!existing.get().getPassword().equals(hash)) {
+				existing.get().setPassword(hash);
+				repository.save(existing.get());
                 log.info("password hash was updated for: {}", user.getUsername());
 			}
 		}
